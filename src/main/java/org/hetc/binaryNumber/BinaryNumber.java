@@ -1,13 +1,43 @@
 package org.hetc.binaryNumber;
 
+import java.math.BigInteger;
 
 public final class BinaryNumber {
-	public final byte[] binary;;
+	private final byte[] binary;;
 	private final int len;	
+	
+	private BinaryNumber(byte[] binary) {
+		int index = 0;
+		byte[] tmp = new byte[binary.length];
+		for(byte positon : binary){
+			if(positon > 1 || positon < 0)
+				throw new IllegalArgumentException("The binary number must not contain numbers different to 0 and 1");
+			tmp[index] = binary[index];
+			index++;
+		}
+		this.len = tmp.length;
+		this.binary = tmp;
+	}
 	
 	public static BinaryNumber of(byte[] binary){
 		byte[] bin = extendToNextTowsExponent(binary);
 		return new BinaryNumber(bin);
+	}
+	
+	public static BinaryNumber of(BigInteger bigInt){
+		boolean isNegative = false;
+		if(bigInt.compareTo(new BigInteger("0")) < 0){
+			isNegative = true;
+			bigInt = bigInt.negate();
+		}
+		int size = getNeededArraySizeForBigInt(bigInt);
+		byte[] binNumber = new byte[size];
+		calcBinaryNumberOfBigInt(bigInt, binNumber, binNumber.length);
+		binNumber = extendToNextTowsExponent(binNumber);
+		if(isNegative){
+			binNumber = internalTowsComplement(binNumber);
+		}
+		return new BinaryNumber(binNumber);
 	}
 	
 	public static BinaryNumber of(String binary){
@@ -23,7 +53,7 @@ public final class BinaryNumber {
 	public static BinaryNumber of(long dezimal){
 		int size = getNeededArraySizeForDezimal(dezimal);
 		byte[] binNumber = new byte[size];
-		calcBinaryNumber(dezimal, binNumber, binNumber.length);
+		calcBinaryNumberOfLong(dezimal, binNumber, binNumber.length);
 		binNumber = extendToNextTowsExponent(binNumber);
 		return new BinaryNumber(binNumber);
 	}
@@ -33,11 +63,44 @@ public final class BinaryNumber {
 		return new BinaryNumber(internalAdd(this.binary,bin.binary));
 	}
 	
-	public long toDezimal(){
+	public BinaryNumber round(int precision){
+		int p = countLeadingZeros(this.binary) + precision;
+		System.out.println("INSERTED P: " + p);
+		return new BinaryNumber(roundBin(this.binary,p));
+	}
+	
+	private static byte[] roundBin(byte[] bin, int precision){
+		if(precision > bin.length || precision == 0){
+			return bin;
+		}
+		byte[] preNum = new byte[bin.length];
+		printArrayAsInlineString(bin);
+		preNum[precision] = 1;
+		printArrayAsInlineString(preNum);
+		bin = internalAdd(bin, preNum);
+		printArrayAsInlineString(bin);
+		byte[] result = new byte[precision];
+		for(int i=0; i < precision; i++){
+			result[i] = bin[i];
+		}
+		printArrayAsInlineString(result);
+		return result;
+		
+	}
+	
+	private static boolean isNegative(byte[] bin){
+		int sign = bin[0];
+		if(sign == 1){
+			return true;
+		}
+		
+		return false;
+	}
+	
+	public long asLong(){
 		byte[] binary = this.binary;
 		long dezimal = 0;
-		int sign = binary[0];
-		if(sign == 1){
+		if(isNegative(binary)){
 			BinaryNumber inverted = new BinaryNumber(invert(binary));
 			BinaryNumber invertedPlusOne = inverted.add(BinaryNumber.of(1));
 			binary = invertedPlusOne.binary;
@@ -47,8 +110,30 @@ public final class BinaryNumber {
 				dezimal += Math.pow(2, i);
 			}
 		}
-		if(sign == 1){
+		if(isNegative(binary)){
 			dezimal = dezimal * -1;
+		}
+		return dezimal;
+	}
+	
+	public BigInteger asBigInt(){
+		byte[] binary = this.binary;
+		BigInteger dezimal = new BigInteger("0");
+		int sign = binary[0];
+		if(sign == 1){
+			BinaryNumber inverted = new BinaryNumber(invert(binary));
+			BinaryNumber invertedPlusOne = inverted.add(BinaryNumber.of(1));
+			binary = invertedPlusOne.binary;
+		}
+		for(int i = 0; i < binary.length; i++){
+			if(binary[binary.length - (i + 1)] == 1){
+				BigInteger two = new BigInteger("2");
+				BigInteger towsPow = two.pow(i);
+				dezimal = dezimal.add(towsPow);
+			}
+		}
+		if(sign == 1){
+			dezimal = dezimal.multiply(new BigInteger("-1"));
 		}
 		return dezimal;
 	}
@@ -76,16 +161,55 @@ public final class BinaryNumber {
 		return new BinaryNumber(internalTowsComplement(this.binary));
 	}
 	
-	public String toZerolessString(){
-		return null;
-	}
 	
 	@Override
 	public String toString(){
-		return this.binaryToString();
+		return this.asString();
 	}
 	
-	private String binaryToString(){
+	public BinaryNumber multiply(BinaryNumber bin){
+		return new BinaryNumber(internalMultiply(this.binary, bin.binary));
+	}
+	
+	private static byte[] internalMultiply(byte[] factor1, byte[] factor2){
+		boolean isNeg = false;
+		int lenFactor2 = factor2.length;
+		int lenFactor1 = factor1.length;
+		int lenResult = lenFactor1+lenFactor2 - 1;
+		if(isNegative(factor2)){
+			System.out.println("FACTOR 2 IS NEG");
+			factor2 = internalTowsComplement(factor2);
+			isNeg = true;
+		}
+		if(isNegative(factor1)){
+			System.out.println("FACTOR 1 IS NEG");
+			factor1 = internalTowsComplement(factor1);
+			isNeg = true;
+		}
+		byte[] result = new byte[lenResult];
+		byte[] twosComplOfResult = new byte[lenResult];
+		byte[] tmp = new byte[lenResult];
+		for(int i = lenFactor2-1, zeros = 0; i >= 0; i--, zeros++){
+			for(int x = 0; x < tmp.length; x++){
+				tmp[x] = 0;
+			}
+			for(int j = 0; j < lenFactor1; j++){
+				tmp[lenResult-lenFactor1+j-zeros] = (byte)(factor2[i] * factor1[j]);
+			}
+			result = internalAdd(result, tmp);
+			if(isNeg){
+				twosComplOfResult = internalTowsComplement(result);
+			}
+			
+			
+		}
+		System.out.println("Final Res: ");
+		printArrayAsInlineString(twosComplOfResult);
+		System.out.println();
+		return twosComplOfResult;
+	}
+	
+	public String asString(){
 		String binAsString = "";
 		for(byte bit : this.binary){
 			binAsString += bit;
@@ -93,20 +217,14 @@ public final class BinaryNumber {
 		return binAsString;
 	}
 	
-	private BinaryNumber(byte[] binary) {
-		int index = 0;
-		byte[] tmp = new byte[binary.length];
-		for(byte positon : binary){
-			if(positon > 1 || positon < 0)
-				throw new IllegalArgumentException("The binary number must not contain numbers different to 0 or 1");
-			tmp[index] = binary[index];
-			index++;
+	private static void printArrayAsInlineString(byte[] bin){
+		for(byte b:bin){
+			System.out.print(b);
 		}
-		this.len = tmp.length;
-		this.binary = tmp;
+		System.out.println();
 	}
 	
-	private byte[] internalAdd(byte[] bin0, byte[] bin1){
+	private static byte[] internalAdd(byte[] bin0, byte[] bin1){
 		byte[] binary = bin1;
 		byte buffer = 0;
 		byte[] result;
@@ -119,7 +237,6 @@ public final class BinaryNumber {
 			maxLength = binTwoLength;
 		}
 		result = new byte[maxLength + 1];
-		
 		for(int i = 0; i < maxLength; i++){
 			byte addend1 = (i < binOneLength)?bin0[binOneLength - (i + 1)]:0;//this.binary[binOneLength - (i + 1)]:0;
 			byte addend2 = (i < binTwoLength)?binary[binTwoLength - (i + 1)]:0; 
@@ -141,7 +258,6 @@ public final class BinaryNumber {
 				buffer = 1;
 			}
 		}
-		
 		if(buffer > 0){
 			result[maxLength] = 1;
 			result = mirror(result);
@@ -149,25 +265,16 @@ public final class BinaryNumber {
 			result = mirror(result);
 			result = removeLeadingDigit(result);
 		}
-		return result;//new BinaryNumber(result);
+		return result;
 	}
 	
-//	public static BinaryNumber adjustBinaries(BinaryNumber one, BinaryNumber two){
-//		BinaryNumber shorter = (one.len < two.len)?one:two;
-//		int maxlen = (one.len > two.len)?one.len:two.len;
-//		byte[] adjusted = fillBinarayNumberWithZeros(shorter.binary, maxlen);
-//		return new BinaryNumber(adjusted);
-//	}
-	
-	
-	
-	private byte[] internalTowsComplement(byte[] bin){
+	private static byte[] internalTowsComplement(byte[] bin){
 		byte[] b = invert(bin);
-		b = internalAdd(b,BinaryNumber.of(1).binary);//new BinaryNumber(b).internalAdd(BinaryNumber.of(1).binary);
+		b = internalAdd(b,BinaryNumber.of(1).binary);
 		return b;
 	}
 	
-	private byte[] removeLeadingDigit(byte[] bin){
+	private static byte[] removeLeadingDigit(byte[] bin){
 		byte[] tmp = new byte[bin.length - 1];
 		for (int i = 0; i < bin.length - 1; i++){
 			tmp[bin.length - (i + 2)] = bin[bin.length - (i+1)];
@@ -176,7 +283,7 @@ public final class BinaryNumber {
 	}
 	
 	private static byte[] removeLeadingZeros(byte[] bin){
-		int numberOfZeros = countNonZeroDigits(bin);
+		int numberOfZeros = countLeadingZeros(bin);
 		byte[] tmp = new byte[bin.length - numberOfZeros];
 		for (int i = numberOfZeros, j = 0; i < bin.length; i++, j++){
 			tmp[j] = bin[i];
@@ -184,16 +291,12 @@ public final class BinaryNumber {
 		return tmp;
 	}
 	
-	private static int countNonZeroDigits(byte[] bin){
+	private static int countLeadingZeros(byte[] bin){
 		int counter = 0;
-		for(int i = 0; i < bin.length; i++){
-			counter = i;
-			byte tmp = bin[i];
-			if(tmp != 0){
-				return i;
-			}
+		while(bin[counter] == 0){
+			counter++;
 		}
-		return (counter > 0)?(counter-1):0;
+		return counter;
 	}
 	
 	private static int getNeededArraySizeForDezimal(long number){
@@ -202,6 +305,16 @@ public final class BinaryNumber {
 		}
 		double log_2 = (Math.log(number)/Math.log(2));
 		double size = Math.floor(log_2 + 1);
+		return (int)size;
+	}
+	
+	private static int getNeededArraySizeForBigInt(BigInteger number){
+		if(number.equals(new BigInteger("0"))){
+			return 1;
+		}
+		double log_2 = (Math.log(number.doubleValue())/Math.log(2));
+		double size = Math.floor(log_2 + 1);
+		System.out.println("Ness Size: " + size);
 		return (int)size;
 	}
 	
@@ -233,12 +346,25 @@ public final class BinaryNumber {
 		return bin;
 	}	
 	
-	private static void calcBinaryNumber(long number, byte[] result, int index){
+	private static void calcBinaryNumberOfLong(long number, byte[] result, int index){
 		if(number != 0){
 			long newNumber = number / 2; 
 			byte bin = (byte)(number % 2);
 			index--;
-			calcBinaryNumber(newNumber, result, index);
+			calcBinaryNumberOfLong(newNumber, result, index);
+			result[index] = bin;
+		}
+	}
+	
+	private static void calcBinaryNumberOfBigInt(BigInteger number, byte[] result, int index){
+		if(!number.equals(new BigInteger("0"))){
+			BigInteger newNumber = number.divide(new BigInteger("2")); 
+			System.out.println("NUMBER/2= " + newNumber);
+			System.out.println("Equals 0? " + newNumber.equals(new BigInteger("0")));
+			byte bin = number.remainder(new BigInteger("2")).byteValue();
+			System.out.println("NUMBER%2= " + bin);
+			index--;
+			calcBinaryNumberOfBigInt(newNumber, result, index);
 			result[index] = bin;
 		}
 	}
@@ -253,7 +379,6 @@ public final class BinaryNumber {
 				tmp[i] = bin[counter];
 				counter++;
 			}
-			
 		}
 		return tmp;
 	}
@@ -266,7 +391,13 @@ public final class BinaryNumber {
 	private static int getNextValidNumberOfBits(byte[] bin){
 		int len = bin.length;
 		int currentExp =  (int)(Math.log(len) / Math.log(2));
-		if(bin[0] == 1){
+		if(currentExp % 2 != 0 && len % 2 == 0){
+			currentExp++;
+		}
+		if(len % 2 != 0){
+			currentExp++;
+		}
+		if(bin[0] == 1 && len % 2 == 0){
 			currentExp++;
 		}
 		int newlength = (int)Math.pow(2, currentExp);
