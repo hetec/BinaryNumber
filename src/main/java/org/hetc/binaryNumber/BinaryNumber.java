@@ -1,8 +1,9 @@
 package org.hetc.binaryNumber;
 
 import java.math.BigInteger;
+import java.util.Objects;
 
-public final class BinaryNumber {
+public final class BinaryNumber implements Comparable<BinaryNumber>{
 	private final byte[] binary;;
 	private final int len;	
 	
@@ -60,30 +61,39 @@ public final class BinaryNumber {
 	
 	
 	public BinaryNumber add(BinaryNumber bin){
-		return new BinaryNumber(internalAdd(this.binary,bin.binary));
+		BinaryNumber nonNull = getNonNullNumber(this, bin);
+		if(!Objects.nonNull(nonNull))
+			return nonNull;
+		
+		if(isNegative(this.binary) && !isNegative(bin.binary)){
+			return new BinaryNumber(internalSubtract(bin.binary, internalTowsComplement(this.binary)));
+		}else if(!isNegative(this.binary) && isNegative(bin.binary)){
+			return new BinaryNumber(internalSubtract(this.binary, internalTowsComplement(bin.binary)));
+		}else if(isNegative(this.binary) && isNegative(bin.binary)){
+			return new BinaryNumber(internalTowsComplement(internalAdd(internalTowsComplement(this.binary), internalTowsComplement(bin.binary))));
+		}else{
+			byte[] tmp = internalAdd(this.binary,bin.binary);
+			return new BinaryNumber(tmp);
+		}
+		
 	}
 	
 	public BinaryNumber round(int precision){
 		int p = countLeadingZeros(this.binary) + precision;
-		System.out.println("INSERTED P: " + p);
-		return new BinaryNumber(roundBin(this.binary,p));
+		return new BinaryNumber(internalRound(this.binary,p));
 	}
 	
-	private static byte[] roundBin(byte[] bin, int precision){
+	private static byte[] internalRound(byte[] bin, int precision){
 		if(precision > bin.length || precision == 0){
 			return bin;
 		}
 		byte[] preNum = new byte[bin.length];
-		printArrayAsInlineString(bin);
 		preNum[precision] = 1;
-		printArrayAsInlineString(preNum);
 		bin = internalAdd(bin, preNum);
-		printArrayAsInlineString(bin);
 		byte[] result = new byte[precision];
 		for(int i=0; i < precision; i++){
 			result[i] = bin[i];
 		}
-		printArrayAsInlineString(result);
 		return result;
 		
 	}
@@ -138,23 +148,43 @@ public final class BinaryNumber {
 		return dezimal;
 	}
 	
-	public BinaryNumber subtract(BinaryNumber bin){
-		byte[] binBinary = bin.binary;
-		byte[] thisBinary = this.binary;
-		BinaryNumber longer = null;
-		if(this.len < bin.len){
-			longer = bin;
+	public static byte[] internalSubtract(byte[] one, byte[] two){
+		byte[] binBinary = two;//bin.binary;
+		byte[] longer;
+		if(one.length < two.length){
+			longer = two;
 		}else{
-			longer = this;
+			longer = one;
 		}
-		binBinary = fillBinarayNumberWithZeros(binBinary, longer.len + 1);
-		longer = new BinaryNumber(fillBinarayNumberWithZeros(thisBinary, longer.len + 1));
+
+		binBinary = fillBinarayNumberWithZeros(binBinary, longer.length + 1);
+		longer = fillBinarayNumberWithZeros(one, longer.length + 1);
 		byte[] twosCompl = internalTowsComplement(binBinary);
-		twosCompl = internalAdd(longer.binary,twosCompl);
-		if(twosCompl.length > longer.len){
+		twosCompl = removeLeadingZeros(internalAdd(longer,twosCompl));
+		if(twosCompl.length > longer.length){
 			twosCompl = removeLeadingDigit(twosCompl);
 		}
-		return new BinaryNumber(twosCompl);
+		return twosCompl;
+	}
+	
+	public BinaryNumber subtract(BinaryNumber bin){
+		BinaryNumber nonNull = getNonNullNumber(this, bin);
+		if(!Objects.nonNull(nonNull))
+			return nonNull;
+		
+		if(!isNegative(this.binary) && isNegative(bin.binary)){
+			return new BinaryNumber(internalAdd(
+					this.binary, internalTowsComplement(bin.binary)));
+		}else if(isNegative(this.binary) && !isNegative(bin.binary)){
+			return new BinaryNumber(internalTowsComplement(
+					internalAdd(internalTowsComplement(this.binary), bin.binary)));
+		}else if(isNegative(this.binary) && isNegative(bin.binary)){
+			return new BinaryNumber(internalSubtract(
+					internalTowsComplement(bin.binary), internalTowsComplement(this.binary)));
+		}else{
+			return new BinaryNumber(internalSubtract(this.binary, bin.binary));
+		}
+		
 	}
 	
 	public BinaryNumber towsComplement(){
@@ -167,27 +197,53 @@ public final class BinaryNumber {
 		return this.asString();
 	}
 	
+
+	private static boolean isNull(BinaryNumber bin){
+		boolean hasNull = false;
+		if((bin.binary[0] == 0 && bin.len == 1))
+			hasNull = true;
+		return hasNull;
+	}
+	
+	private static BinaryNumber getNonNullNumber(BinaryNumber bin1, BinaryNumber bin2){
+		if(!isNull(bin1))
+			return bin1;
+		if(!isNull(bin2))
+			return bin1;
+		return null;
+	}
+	
 	public BinaryNumber multiply(BinaryNumber bin){
+		if(isNull(this) || isNull(bin))
+			return new BinaryNumber(new byte[]{0});
 		return new BinaryNumber(internalMultiply(this.binary, bin.binary));
 	}
 	
 	private static byte[] internalMultiply(byte[] factor1, byte[] factor2){
-		boolean isNeg = false;
+		System.out.println("Fac1: ");
+		printArrayAsInlineString(factor1);
+		System.out.println("Fac2: ");
+		printArrayAsInlineString(factor2);
+		boolean isNeg1 = false;
+		boolean isNeg2 = false;
 		int lenFactor2 = factor2.length;
 		int lenFactor1 = factor1.length;
 		int lenResult = lenFactor1+lenFactor2 - 1;
 		if(isNegative(factor2)){
-			System.out.println("FACTOR 2 IS NEG");
-			factor2 = internalTowsComplement(factor2);
-			isNeg = true;
+			System.out.println("fac2 is neg");
+			factor2 = extendToNextTowsExponent(internalTowsComplement(factor2));
+			isNeg1 = true;
+			System.out.println("neg Fac2: ");
+			printArrayAsInlineString(factor2);
 		}
 		if(isNegative(factor1)){
-			System.out.println("FACTOR 1 IS NEG");
-			factor1 = internalTowsComplement(factor1);
-			isNeg = true;
+			System.out.println("fac1 is neg");
+			factor1 = extendToNextTowsExponent(internalTowsComplement(factor1));
+			isNeg2 = true;
+			System.out.println("neg Fac1: ");
+			printArrayAsInlineString(factor1);
 		}
 		byte[] result = new byte[lenResult];
-		byte[] twosComplOfResult = new byte[lenResult];
 		byte[] tmp = new byte[lenResult];
 		for(int i = lenFactor2-1, zeros = 0; i >= 0; i--, zeros++){
 			for(int x = 0; x < tmp.length; x++){
@@ -196,17 +252,15 @@ public final class BinaryNumber {
 			for(int j = 0; j < lenFactor1; j++){
 				tmp[lenResult-lenFactor1+j-zeros] = (byte)(factor2[i] * factor1[j]);
 			}
+			
 			result = internalAdd(result, tmp);
-			if(isNeg){
-				twosComplOfResult = internalTowsComplement(result);
-			}
-			
-			
 		}
-		System.out.println("Final Res: ");
-		printArrayAsInlineString(twosComplOfResult);
-		System.out.println();
-		return twosComplOfResult;
+		if(!(isNeg1 && isNeg2) && !(!isNeg1 && !isNeg2) ){
+			result = internalTowsComplement(result);
+		}
+//		System.out.println("res: ");
+//		printArrayAsInlineString(result);
+		return result;
 	}
 	
 	public String asString(){
@@ -265,12 +319,12 @@ public final class BinaryNumber {
 			result = mirror(result);
 			result = removeLeadingDigit(result);
 		}
-		return result;
+		return extendToNextTowsExponent(result);
 	}
 	
 	private static byte[] internalTowsComplement(byte[] bin){
 		byte[] b = invert(bin);
-		b = internalAdd(b,BinaryNumber.of(1).binary);
+		b = removeLeadingZeros(internalAdd(b,BinaryNumber.of(1).binary));
 		return b;
 	}
 	
@@ -282,7 +336,14 @@ public final class BinaryNumber {
 		return tmp;
 	}
 	
+	public BinaryNumber removeLeadingZeros(){
+		return new BinaryNumber(removeLeadingZeros(this.binary));
+	}
+	
 	private static byte[] removeLeadingZeros(byte[] bin){
+		printArrayAsInlineString(bin);
+		if(bin.length == 1)
+			return bin;
 		int numberOfZeros = countLeadingZeros(bin);
 		byte[] tmp = new byte[bin.length - numberOfZeros];
 		for (int i = numberOfZeros, j = 0; i < bin.length; i++, j++){
@@ -359,10 +420,7 @@ public final class BinaryNumber {
 	private static void calcBinaryNumberOfBigInt(BigInteger number, byte[] result, int index){
 		if(!number.equals(new BigInteger("0"))){
 			BigInteger newNumber = number.divide(new BigInteger("2")); 
-			System.out.println("NUMBER/2= " + newNumber);
-			System.out.println("Equals 0? " + newNumber.equals(new BigInteger("0")));
 			byte bin = number.remainder(new BigInteger("2")).byteValue();
-			System.out.println("NUMBER%2= " + bin);
 			index--;
 			calcBinaryNumberOfBigInt(newNumber, result, index);
 			result[index] = bin;
@@ -390,6 +448,9 @@ public final class BinaryNumber {
 	
 	private static int getNextValidNumberOfBits(byte[] bin){
 		int len = bin.length;
+		if(len == 1 && bin[0] == 0){
+			return 1;
+		}
 		int currentExp =  (int)(Math.log(len) / Math.log(2));
 		if(currentExp % 2 != 0 && len % 2 == 0){
 			currentExp++;
@@ -402,6 +463,44 @@ public final class BinaryNumber {
 		}
 		int newlength = (int)Math.pow(2, currentExp);
 		return newlength;
+	}
+	
+	@Override
+	public boolean equals(Object bin){
+		if(this == bin)
+			return true;
+		if(!(bin instanceof BinaryNumber))
+			return false;
+		
+		BinaryNumber binary = (BinaryNumber)bin;
+		byte[] binary_bytes = removeLeadingZeros(binary.binary);
+		byte[] this_bytes = removeLeadingZeros(this.binary);
+		if(binary_bytes.length != this_bytes.length){
+			return false;
+		}else{
+			for(int i = 0; i < binary_bytes.length; i++){
+				if(binary_bytes[i] != this_bytes[i])
+					return false;
+			}
+		}
+		return true;
+	}
+	
+	
+	@Override
+	public int hashCode(){
+		int result = 17;
+		byte[] this_binary = removeLeadingZeros(this.binary);
+		for(byte digit : this_binary){
+			result += 31 * result + digit;
+		}
+		return result;
+	}
+	
+	public int compareTo(BinaryNumber bin) {
+		if(this == bin)
+			return 0;
+		return (this.asBigInt()).compareTo(bin.asBigInt());
 	}
 	
 	
