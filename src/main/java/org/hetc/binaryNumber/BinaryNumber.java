@@ -220,28 +220,18 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 	}
 	
 	private static byte[] internalMultiply(byte[] factor1, byte[] factor2){
-		System.out.println("Fac1: ");
-		printArrayAsInlineString(factor1);
-		System.out.println("Fac2: ");
-		printArrayAsInlineString(factor2);
 		boolean isNeg1 = false;
 		boolean isNeg2 = false;
 		int lenFactor2 = factor2.length;
 		int lenFactor1 = factor1.length;
 		int lenResult = lenFactor1+lenFactor2 - 1;
 		if(isNegative(factor2)){
-			System.out.println("fac2 is neg");
 			factor2 = extendToNextTowsExponent(internalTowsComplement(factor2));
 			isNeg1 = true;
-			System.out.println("neg Fac2: ");
-			printArrayAsInlineString(factor2);
 		}
 		if(isNegative(factor1)){
-			System.out.println("fac1 is neg");
 			factor1 = extendToNextTowsExponent(internalTowsComplement(factor1));
 			isNeg2 = true;
-			System.out.println("neg Fac1: ");
-			printArrayAsInlineString(factor1);
 		}
 		byte[] result = new byte[lenResult];
 		byte[] tmp = new byte[lenResult];
@@ -258,8 +248,6 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 		if(!(isNeg1 && isNeg2) && !(!isNeg1 && !isNeg2) ){
 			result = internalTowsComplement(result);
 		}
-//		System.out.println("res: ");
-//		printArrayAsInlineString(result);
 		return result;
 	}
 	
@@ -375,7 +363,6 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 		}
 		double log_2 = (Math.log(number.doubleValue())/Math.log(2));
 		double size = Math.floor(log_2 + 1);
-		System.out.println("Ness Size: " + size);
 		return (int)size;
 	}
 	
