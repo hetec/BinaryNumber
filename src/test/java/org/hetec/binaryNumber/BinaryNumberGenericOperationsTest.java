@@ -185,6 +185,46 @@ public class BinaryNumberGenericOperationsTest {
 					&& numThree.compareTo(numOne) < 0);
 		}
 		
+		//compareTo byte based
+		
+		@Test
+		public void testCompareToWithoutLeadingZeros(){
+			BinaryNumber nine = BinaryNumber.of(new byte[]{1,1,0,1});
+			BinaryNumber twelve = BinaryNumber.of(new byte[]{1,1,1,0});
+			BinaryNumber twelveV2 = BinaryNumber.of(new byte[]{1,1,1,0});
+			int twelveGtNine = twelve.compareTo(nine);
+			int twelveEqTwelveV2 = twelve.compareTo(twelveV2);
+			int nineStTwelve= nine.compareTo(twelve);
+			assertEquals(1, twelveGtNine);
+			assertEquals(0, twelveEqTwelveV2);
+			assertEquals(-1, nineStTwelve);
+		}
+		
+		@Test
+		public void testCompareToWithLeadingZeros(){
+			BinaryNumber nine = BinaryNumber.of(new byte[]{0,0,0,1,1,0,1});
+			BinaryNumber twelve = BinaryNumber.of(new byte[]{0,1,1,1,0});
+			BinaryNumber twelveV2 = BinaryNumber.of(new byte[]{0,0,1,1,1,0});
+			int twelveGtNine = twelve.compareTo(nine);
+			int twelveEqTwelveV2 = twelve.compareTo(twelveV2);
+			int nineStTwelve= nine.compareTo(twelve);
+			assertEquals(1, twelveGtNine);
+			assertEquals(0, twelveEqTwelveV2);
+			assertEquals(-1, nineStTwelve);
+		}
+		
+		@Test
+		public void testCompareToZero(){
+			BinaryNumber zero = BinaryNumber.of(new byte[]{0,0,0});
+			BinaryNumber twelve = BinaryNumber.of(new byte[]{0,1,1,1,0});
+			BinaryNumber zeroV2 = BinaryNumber.of(new byte[]{0});
+			int twelveGtZero = twelve.compareTo(zero);
+			int twelveGtZeroV2 = twelve.compareTo(zeroV2);
+			int zeroStTwelve= zero.compareTo(twelve);
+			assertEquals(1, twelveGtZero);
+			assertEquals(1, twelveGtZeroV2);
+			assertEquals(-1, zeroStTwelve);
+		}
 		
 
 }

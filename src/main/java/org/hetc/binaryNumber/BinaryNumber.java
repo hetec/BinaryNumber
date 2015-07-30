@@ -216,11 +216,21 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 		return result;
 	}
 	
-
 	public int compareTo(BinaryNumber bin) {
-		if(this == bin)
-			return 0;
-		return (this.asBigInt()).compareTo(bin.asBigInt());
+		byte[] binBytes = removeLeadingZeros(bin.binary);
+		byte[] thisBytes = removeLeadingZeros(this.binary);
+		long binBytesLen = binBytes.length;
+		long thisBytesLen = thisBytes.length;
+		if(binBytesLen != thisBytesLen){
+			return (binBytesLen > thisBytesLen)? -1 : 1;
+		}
+		for(int i = 0; i < binBytesLen; i++){
+			byte binDigit = binBytes[i];
+			byte thisDigit = thisBytes[i];
+			if(binDigit != thisDigit)
+				return (binDigit > thisDigit)?-1:1;
+		}
+		return 0;
 	}
 	
 	@Override
@@ -490,6 +500,15 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 		int newlength = (int)Math.pow(2, currentExp);
 		return newlength;
 	}
+
+	public BinaryNumber divide(BinaryNumber five) {
+		
+		
+		
+		return new BinaryNumber(new byte[]{1,1,0});
+	}
+
+	
 	
 //	private BinaryNumber round(int precision){
 //		int p = countLeadingZeros(this.binary) + precision;
