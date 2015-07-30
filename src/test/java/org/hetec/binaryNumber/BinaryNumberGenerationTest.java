@@ -15,12 +15,14 @@ public class BinaryNumberGenerationTest {
 	private String negFour;
 	private String eight;
 	private String twenty;
+	private String sixbit;
 	
 	
 	@Before
 	public void setUp() {
 		one = "01";
 		four = "0100";
+		sixbit = "00100100";
 		negFour = "1100";
 		eight = "00001000";
 		twenty = "00010100";
@@ -30,7 +32,15 @@ public class BinaryNumberGenerationTest {
 	@Test
 	public void testOfByteArrayWithFourBitNumber(){
 		BinaryNumber fourBit = BinaryNumber.of(new byte[]{0,1,0,0});
+		BinaryNumber fourBit1 = BinaryNumber.of(new byte[]{0,0,0,1,0,0});
 		assertEquals(four, fourBit.toString());
+		//assertEquals(BinaryNumber.of(new byte[]{0,0,0,1,0,0});, actual);
+	}
+	
+	@Test
+	public void testOfByteArrayWithSixBitNumber(){
+		BinaryNumber sixBit = BinaryNumber.of(new byte[]{1,0,0,1,0,0});
+		assertEquals(sixbit, sixBit.toString());
 	}
 	
 	@Test
@@ -132,6 +142,19 @@ public class BinaryNumberGenerationTest {
 		assertEquals(twenty, fourBit.toString());
 	}
 	
+	@Test
+	public void testOfLongLimits(){
+		BinaryNumber.of(Long.MAX_VALUE);
+		BinaryNumber.of(Long.MIN_VALUE + 1);
+	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public void testOfLongThrowExIfInputOutOfRange(){
+		BinaryNumber.of(Long.MAX_VALUE + 1);
+		BinaryNumber.of(Long.MIN_VALUE);
+	}
+	
+	//string
 	@Test
 	public void testOfStringWithZero(){
 		BinaryNumber fourBit = BinaryNumber.of("0");

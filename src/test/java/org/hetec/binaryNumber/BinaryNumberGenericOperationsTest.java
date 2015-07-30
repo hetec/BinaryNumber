@@ -185,5 +185,6 @@ public class BinaryNumberGenericOperationsTest {
 					&& numThree.compareTo(numOne) < 0);
 		}
 		
+		
 
 }

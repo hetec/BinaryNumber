@@ -2,26 +2,31 @@ package org.hetec.binaryNumber;
 
 import static org.junit.Assert.*;
 
+import java.math.BigInteger;
+
 import org.hetc.binaryNumber.BinaryNumber;
 import org.junit.Before;
 import org.junit.Test;
 
 public class BinaryNumberOutputTest {
 	
-	BinaryNumber thirtyTwo;
+	BinaryNumber fourtyFive;
 	BinaryNumber zero;
 	BinaryNumber one;
+	BinaryNumber minusTen;
 	
 	@Before
 	public void setUp(){
-		thirtyTwo = BinaryNumber.of(new byte[]{1,0,1,1,0,1});
+		fourtyFive = BinaryNumber.of(new byte[]{1,0,1,1,0,1});
 		zero = BinaryNumber.of(new byte[]{0});
 		one = BinaryNumber.of(new byte[]{1});
+		minusTen = BinaryNumber.of(-10);
 	}
 	
+	//asBigInt
 	@Test
 	public void testToBigIntForThirtyFive(){
-		assertEquals("45", thirtyTwo.asBigInt().toString());
+		assertEquals("45", fourtyFive.asBigInt().toString());
 	}
 	
 	@Test
@@ -35,8 +40,13 @@ public class BinaryNumberOutputTest {
 	}
 	
 	@Test
+	public void testToBigIntNegValue(){
+		assertEquals("-10", minusTen.asBigInt().toString());
+	}
+	
+	@Test
 	public void testToStringWithThirtyTwo(){
-		assertEquals("00101101", thirtyTwo.toString());
+		assertEquals("00101101", fourtyFive.toString());
 	}
 	
 	@Test
@@ -47,6 +57,36 @@ public class BinaryNumberOutputTest {
 	@Test
 	public void testToStringWithThirtyZero(){
 		assertEquals("0", zero.toString());
+	}
+	
+	@Test
+	public void testToStringWithNegValue(){
+		assertEquals("11110110", minusTen.toString());
+	}
+	
+	//asLong
+	@Test
+	public void testAsLong(){
+		assertEquals(45L, fourtyFive.asLong());
+	}
+	
+	@Test
+	public void testAsLongNegValue(){
+		assertEquals(-10, minusTen.asLong());
+	}
+	
+	@Test
+	public void testAsLongZero(){
+		assertEquals(0, zero.asLong());
+	}
+	
+	@Test(expected=IllegalStateException.class)
+	public void testAsLongThrowExceptionForToLageInputValues(){
+		//toLarge = Long.MAX_VALUE +1
+		BinaryNumber tooLarge = BinaryNumber.of(new BigInteger("9223372036854775808"));
+		BinaryNumber tooSmall = BinaryNumber.of(new BigInteger("-9223372036854775808"));
+		tooLarge.asLong();
+		tooSmall.asLong();
 	}
 	
 

@@ -129,5 +129,50 @@ public class BinaryNumberMathOperationsTest {
 		BinaryNumber result = zero.multiply(zero);
 		assertEquals("0", result.asBigInt().toString());
 	}
+	
+	//invert
+	@Test
+	public void testInvert(){
+		BinaryNumber num = BinaryNumber.of(new byte[]{0,0,1,1,0,1});
+		BinaryNumber inverted = num.invert();
+		assertEquals(BinaryNumber.of(new byte[]{1,1,1,1,0,0,1,0}), inverted);
+		assertEquals(inverted.invert(), num);
+	}
+	
+	@Test
+	public void testInvertZero(){
+		BinaryNumber num = BinaryNumber.of(new byte[]{0});
+		BinaryNumber inverted = num.invert();
+		assertEquals(BinaryNumber.of(new byte[]{1}), inverted);
+
+	}
+	
+	//removeLeadingZeros
+	
+	@Test
+	public void testRemoveLeadingZeros(){
+		BinaryNumber num = BinaryNumber.of(new byte[]{0,0,1,1,0,1});
+		BinaryNumber num1 = BinaryNumber.of(new byte[]{1,1,0,1});
+		BinaryNumber num2 = BinaryNumber.of(new byte[]{0,0,0,0});
+		assertEquals(BinaryNumber.of(new byte[]{1,1,0,1}), num.removeLeadingZeros());
+		assertEquals(BinaryNumber.of(new byte[]{1,1,0,1}), num1.removeLeadingZeros());
+		assertEquals(BinaryNumber.of(new byte[]{0}), num2.removeLeadingZeros());
+	}
+	
+	//twosComplement
+	
+	@Test
+	public void testTwosComplement(){
+		BinaryNumber num = BinaryNumber.of(new byte[]{0,0,1,1,0,1});
+		BinaryNumber num1 = BinaryNumber.of(new byte[]{0});
+		BinaryNumber num2 = BinaryNumber.of(new byte[]{1,1,0,1});
+		BinaryNumber twos0 = num.towsComplement();
+		BinaryNumber twos1 = num1.towsComplement();
+		BinaryNumber twos2 = num2.towsComplement();
+		assertEquals(BinaryNumber.of(new byte[]{1,1,1,1,0,0,1,1}), twos0);
+		assertEquals(BinaryNumber.of(new byte[]{0}), twos1);
+		assertEquals(BinaryNumber.of(new byte[]{1,1,1,1,0,0,1,1}), twos2);
+
+	}
 
 }
