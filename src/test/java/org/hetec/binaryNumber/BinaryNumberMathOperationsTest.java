@@ -178,15 +178,16 @@ public class BinaryNumberMathOperationsTest {
 	
 	//divide
 	
-	@Test @Ignore
+	@Test
 	public void testDivideForPosNumbers(){
 		BinaryNumber thirty = BinaryNumber.of(new byte[]{1,1,1,1,0});
-		BinaryNumber twenty = BinaryNumber.of(new byte[]{0,1,0,1,0});
-		BinaryNumber five = BinaryNumber.of(new byte[]{1,1,1,1,0});
+		BinaryNumber twenty = BinaryNumber.of(new byte[]{1,0,1,0,0});
+		BinaryNumber five = BinaryNumber.of(new byte[]{1,0,1});
 		BinaryNumber six = thirty.divide(five);
 		BinaryNumber four = twenty.divide(five);
 		assertEquals(BinaryNumber.of(new byte[]{0,1,1,0}), six);
 		assertEquals(BinaryNumber.of(new byte[]{0,1,0,0}), four);
 	}
+
 
 }

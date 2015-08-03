@@ -1,19 +1,18 @@
 package org.hetc.binaryNumber;
 
 import java.math.BigInteger;
-import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Objects;
-
-import javax.swing.plaf.synth.SynthScrollBarUI;
 
 public final class BinaryNumber implements Comparable<BinaryNumber>{
 	private static BinaryNumber LIMIT_LONG_MAX = BinaryNumber.of(Long.MAX_VALUE);
 	static long min = Long.MIN_VALUE+1;
 	private static BinaryNumber LIMIT_LONG_MIN = BinaryNumber.of(min);
-	
+
 	private final byte[] binary;;
-	private final int len;	
-	
+	private final int len;
+
 	private BinaryNumber(byte[] binary) {
 		int index = 0;
 		byte[] tmp = new byte[binary.length];
@@ -26,12 +25,12 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 		this.len = tmp.length;
 		this.binary = tmp;
 	}
-	
+
 	public static BinaryNumber of(byte[] binary){
 		byte[] bin = extendToNextTowsExponent(binary);
 		return new BinaryNumber(bin);
 	}
-	
+
 	public static BinaryNumber of(BigInteger bigInt){
 		boolean isNegative = false;
 		if(bigInt.compareTo(new BigInteger("0")) < 0){
@@ -47,7 +46,7 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 		}
 		return new BinaryNumber(binNumber);
 	}
-	
+
 	public static BinaryNumber of(String binary){
 		byte[] bin = new byte[binary.length()];
 		char[] digits = binary.toCharArray();
@@ -57,9 +56,8 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 		bin = extendToNextTowsExponent(bin);
 		return new BinaryNumber(bin);
 	}
-	
+
 	public static BinaryNumber of(long dezimal){
-		System.out.println("Long value: " + dezimal);
 		boolean isNeg = false;
 		if(dezimal < 0){
 			if(dezimal < Long.MIN_VALUE + 1)
@@ -77,13 +75,13 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 		}
 		return new BinaryNumber(binNumber);
 	}
-	
-	
+
+
 	public BinaryNumber add(BinaryNumber bin){
 		BinaryNumber nonNull = getNonNullNumber(this, bin);
 		if(!Objects.nonNull(nonNull))
 			return nonNull;
-		
+
 		if(isNegative(this.binary) && !isNegative(bin.binary)){
 			return new BinaryNumber(internalSubtract(bin.binary, internalTowsComplement(this.binary)));
 		}else if(!isNegative(this.binary) && isNegative(bin.binary)){
@@ -94,14 +92,14 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 			byte[] tmp = internalAdd(this.binary,bin.binary);
 			return new BinaryNumber(tmp);
 		}
-		
+
 	}
-	
+
 	public BinaryNumber subtract(BinaryNumber bin){
 		BinaryNumber nonNull = getNonNullNumber(this, bin);
 		if(!Objects.nonNull(nonNull))
 			return nonNull;
-		
+
 		if(!isNegative(this.binary) && isNegative(bin.binary)){
 			return new BinaryNumber(internalAdd(
 					this.binary, internalTowsComplement(bin.binary)));
@@ -114,34 +112,32 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 		}else{
 			return new BinaryNumber(internalSubtract(this.binary, bin.binary));
 		}
-		
+
 	}
-	
+
 	public BinaryNumber multiply(BinaryNumber bin){
 		if(isNull(this) || isNull(bin))
 			return new BinaryNumber(new byte[]{0});
 		return new BinaryNumber(internalMultiply(this.binary, bin.binary));
 	}
-	
+
 	public BinaryNumber towsComplement(){
 		BinaryNumber zero = new BinaryNumber(new byte[]{0});
 		if(this.equals(zero))
 			return zero;
 		return new BinaryNumber(internalTowsComplement(this.binary));
 	}
-	
+
 	public BinaryNumber invert(){
 		return new BinaryNumber(invert(this.binary));
 	}
-	
+
 	public long asLong(){
-		System.out.println("THIS > MAX: " + (this.compareTo(LIMIT_LONG_MAX) > 0));
-		System.out.println("THIS < MIN: " + (this.compareTo(LIMIT_LONG_MIN) < 0) + "; Min = " + LIMIT_LONG_MIN);
 		if(this.compareTo(LIMIT_LONG_MAX) > 0 || this.compareTo(LIMIT_LONG_MIN) < 0){
 				throw new IllegalStateException("The assigned binary number is to large or \nsmall to be converted into a long value");
 		}
 		byte[] binary = this.binary;
-		
+
 		long dezimal = 0;
 		boolean neg = isNegative(binary);
 		if(neg){
@@ -152,7 +148,7 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 		for(int i = 0; i < binary.length; i++){
 			if(binary[binary.length - (i + 1)] == 1){
 				dezimal += Math.pow(2, i);
-				
+
 			}
 		}
 		if(neg){
@@ -160,7 +156,7 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 		}
 		return dezimal;
 	}
-	
+
 	public BigInteger asBigInt(){
 		byte[] binary = this.binary;
 		BigInteger dezimal = new BigInteger("0");
@@ -182,18 +178,18 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 		}
 		return dezimal;
 	}
-	
+
 	public BinaryNumber removeLeadingZeros(){
 		return new BinaryNumber(removeLeadingZeros(this.binary));
 	}
-	
+
 	@Override
 	public boolean equals(Object bin){
 		if(this == bin)
 			return true;
 		if(!(bin instanceof BinaryNumber))
 			return false;
-		
+
 		BinaryNumber binary = (BinaryNumber)bin;
 		byte[] binary_bytes = removeLeadingZeros(binary.binary);
 		byte[] this_bytes = removeLeadingZeros(this.binary);
@@ -217,7 +213,13 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 		}
 		return result;
 	}
-	
+
+	@Override
+	public String toString(){
+		return this.asString();
+	}
+
+	@Override
 	public int compareTo(BinaryNumber bin) {
 		boolean thisNeg = isNegative(this.binary);
 		boolean binNeg = isNegative(bin.binary);
@@ -230,31 +232,11 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 		}else{
 			return interalCompareTo(this.binary, bin.binary);
 		}
-		
-		
-//		byte[] binBytes = removeLeadingZeros(bin.binary);
-//		System.out.println("binBytes: " + Arrays.toString(binBytes));
-//		byte[] thisBytes = removeLeadingZeros(this.binary);
-//		System.out.println("thisBytes: " + Arrays.toString(thisBytes));
-//		long binBytesLen = binBytes.length;
-//		long thisBytesLen = thisBytes.length;
-//		if(binBytesLen != thisBytesLen){
-//			return (binBytesLen > thisBytesLen)? -1 : 1;
-//		}
-//		for(int i = 0; i < binBytesLen; i++){
-//			byte binDigit = binBytes[i];
-//			byte thisDigit = thisBytes[i];
-//			if(binDigit != thisDigit)
-//				return (binDigit > thisDigit)?-1:1;
-//		}
-//		return 0;
 	}
-	
+
 	private static int interalCompareTo(byte[] bin1, byte[] bin2){
 		byte[] binBytes = removeLeadingZeros(bin2);
-		System.out.println("binBytes: " + Arrays.toString(binBytes));
 		byte[] thisBytes = removeLeadingZeros(bin1);
-		System.out.println("thisBytes: " + Arrays.toString(thisBytes));
 		long binBytesLen = binBytes.length;
 		long thisBytesLen = thisBytes.length;
 		if(binBytesLen != thisBytesLen){
@@ -268,12 +250,8 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 		}
 		return 0;
 	}
-	
-	@Override
-	public String toString(){
-		return this.asString();
-	}
-	
+
+
 	private static byte[] internalSubtract(byte[] one, byte[] two){
 		byte[] binBinary = two;
 		byte[] longer;
@@ -292,23 +270,27 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 		}
 		return twosCompl;
 	}
-	
+
 	private static boolean isNegative(byte[] bin){
 		int sign = bin[0];
 		if(sign == 1){
 			return true;
 		}
-		
+
 		return false;
 	}
 
 	private static boolean isNull(BinaryNumber bin){
+		return isNull(bin.binary);
+	}
+
+	private static boolean isNull(byte[] bin){
 		boolean hasNull = false;
-		if((bin.binary[0] == 0 && bin.len == 1))
+		if((bin[0] == 0 && bin.length == 1))
 			hasNull = true;
 		return hasNull;
 	}
-	
+
 	private static BinaryNumber getNonNullNumber(BinaryNumber bin1, BinaryNumber bin2){
 		if(!isNull(bin1))
 			return bin1;
@@ -316,7 +298,7 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 			return bin1;
 		return null;
 	}
-	
+
 	private static byte[] internalMultiply(byte[] factor1, byte[] factor2){
 		boolean isNeg1 = false;
 		boolean isNeg2 = false;
@@ -340,7 +322,7 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 			for(int j = 0; j < lenFactor1; j++){
 				tmp[lenResult-lenFactor1+j-zeros] = (byte)(factor2[i] * factor1[j]);
 			}
-			
+
 			result = internalAdd(result, tmp);
 		}
 		if(!(isNeg1 && isNeg2) && !(!isNeg1 && !isNeg2) ){
@@ -348,7 +330,7 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 		}
 		return result;
 	}
-	
+
 	private String asString(){
 		String binAsString = "";
 		for(byte bit : this.binary){
@@ -356,7 +338,7 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 		}
 		return binAsString;
 	}
-	
+
 	private static byte[] internalAdd(byte[] bin0, byte[] bin1){
 		byte[] binary = bin1;
 		byte buffer = 0;
@@ -372,7 +354,7 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 		result = new byte[maxLength + 1];
 		for(int i = 0; i < maxLength; i++){
 			byte addend1 = (i < binOneLength)?bin0[binOneLength - (i + 1)]:0;//this.binary[binOneLength - (i + 1)]:0;
-			byte addend2 = (i < binTwoLength)?binary[binTwoLength - (i + 1)]:0; 
+			byte addend2 = (i < binTwoLength)?binary[binTwoLength - (i + 1)]:0;
 			int rowResult =  addend1 + addend2 + buffer;
 			if(rowResult == 0){
 				result[i] = 0;
@@ -400,13 +382,13 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 		}
 		return extendToNextTowsExponent(result);
 	}
-	
+
 	private static byte[] internalTowsComplement(byte[] bin){
 		byte[] b = invert(bin);
 		b = removeLeadingZeros(internalAdd(b,BinaryNumber.of(1).binary));
 		return b;
 	}
-	
+
 	private static byte[] removeLeadingDigit(byte[] bin){
 		byte[] tmp = new byte[bin.length - 1];
 		for (int i = 0; i < bin.length - 1; i++){
@@ -414,7 +396,7 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 		}
 		return tmp;
 	}
-	
+
 	private static byte[] removeLeadingZeros(byte[] bin){
 		if(bin.length == 1)
 			return bin;
@@ -425,19 +407,19 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 		}
 		return tmp;
 	}
-	
+
 	private static int countLeadingZeros(byte[] bin){
 		int counter = 0;
 		while(bin[counter] == 0){
 			counter++;
 			if(counter == bin.length){
-				counter = --counter;
+				--counter;
 				break;
 			}
 		}
 		return counter;
 	}
-	
+
 	private static int getNeededArraySizeForDezimal(long number){
 		if(number == 0){
 			return 1;
@@ -446,7 +428,7 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 		double size = Math.floor(log_2 + 1);
 		return (int)size;
 	}
-	
+
 	private static int getNeededArraySizeForBigInt(BigInteger number){
 		if(number.equals(new BigInteger("0"))){
 			return 1;
@@ -455,7 +437,7 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 		double size = Math.floor(log_2 + 1);
 		return (int)size;
 	}
-	
+
 	private static byte[] invert(byte[] binary){
 		byte[] inverted = new byte[binary.length];
 		for(int i = 0; i < binary.length; i++){
@@ -467,35 +449,35 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 		}
 		return inverted;
 	}
-	
+
 	private static byte[] mirror(byte[] binary){
 		byte[] bin = new byte[binary.length];
 		for(int i = 0; i < binary.length; i++){
 			bin[i] = binary[binary.length - (i + 1)];
 		}
 		return bin;
-	}	
-	
+	}
+
 	private static void calcBinaryNumberOfLong(long number, byte[] result, int index){
 		if(number != 0){
-			long newNumber = number / 2; 
+			long newNumber = number / 2;
 			byte bin = (byte)(number % 2);
 			index--;
 			calcBinaryNumberOfLong(newNumber, result, index);
 			result[index] = bin;
 		}
 	}
-	
+
 	private static void calcBinaryNumberOfBigInt(BigInteger number, byte[] result, int index){
 		if(!number.equals(new BigInteger("0"))){
-			BigInteger newNumber = number.divide(new BigInteger("2")); 
+			BigInteger newNumber = number.divide(new BigInteger("2"));
 			byte bin = number.remainder(new BigInteger("2")).byteValue();
 			index--;
 			calcBinaryNumberOfBigInt(newNumber, result, index);
 			result[index] = bin;
 		}
 	}
-	
+
 	private static byte[] fillBinarayNumberWithZeros(byte[] bin, int len){
 		byte[] tmp = new byte[len];
 		int counter = 0;
@@ -509,12 +491,12 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 		}
 		return tmp;
 	}
-	
+
 	private static byte[] extendToNextTowsExponent(byte[] bin){
 		int len = getNextValidNumberOfBits(bin);
 		return fillBinarayNumberWithZeros(bin, len);
 	}
-	
+
 	private static int getNextValidNumberOfBits(byte[] bin){
 		int len = bin.length;
 		if(len == 1 && bin[0] == 0){
@@ -534,20 +516,104 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 		return newlength;
 	}
 
-	public BinaryNumber divide(BinaryNumber five) {
-		
-		
-		
-		return new BinaryNumber(new byte[]{1,1,0});
+	public BinaryNumber divide(BinaryNumber bin){
+		if(isNull(this))
+			return new BinaryNumber(new byte[]{0});
+		if(isNull(bin)){
+			throw new IllegalArgumentException("Division by zero is not allowed");
+		}
+		if(!isNegative(this.binary) && isNegative(bin.binary)){
+			return new BinaryNumber(internalTowsComplement(
+					internalDivide(this.binary, internalTowsComplement(bin.binary))));
+		}else if(isNegative(this.binary) && !isNegative(bin.binary)){
+			return new BinaryNumber(internalTowsComplement(
+					internalDivide(internalTowsComplement(this.binary), bin.binary)));
+		}else if(isNegative(this.binary) && isNegative(bin.binary)){
+			return new BinaryNumber(internalDivide(
+					internalTowsComplement(this.binary), internalTowsComplement(bin.binary)));
+		}else{
+			return new BinaryNumber(internalDivide(this.binary, bin.binary));
+		}
 	}
 
-	
-	
+	private static byte[] internalDivide(byte[] numerator, byte[] dividend) {
+		byte[] internalNumerator = removeLeadingZeros(numerator);
+		byte[] internalDividend = removeLeadingZeros(dividend);
+		List<Byte> result = new LinkedList<>();
+		byte[] partialNumeratorValue = getStartValue(internalNumerator, internalDividend);
+		byte[] partialDividendValue = internalDividend;
+		byte[] partialNumeratorValueExtendedByOneDigit = getStartValue(internalNumerator, internalDividend);//extendToNextTowsExponent(binBinary);
+		int posistion = internalDividend.length;
+		int stepCounter = 0;
+		while(true){
+			partialNumeratorValue = checkDividendFitsInPartOfNumberator(partialNumeratorValue, internalDividend);
+			result.add(isNull(partialNumeratorValue)?(byte)0:(byte)1);
+			if(posistion >= internalNumerator.length){
+				break;
+			}
+			if(stepCounter > 0)
+				partialDividendValue = partialNumeratorValue;
+			partialNumeratorValue = internalSubtract(partialNumeratorValueExtendedByOneDigit,partialDividendValue);//dividend was tmp before
+			partialNumeratorValueExtendedByOneDigit = extendByOneDigit(posistion, partialNumeratorValue, internalNumerator);
+			partialNumeratorValue = partialNumeratorValueExtendedByOneDigit;
+			posistion++;
+			stepCounter++;
+
+		}
+		byte[] resultAsBytes = mapListToArray(result);
+		return extendToNextTowsExponent(resultAsBytes);
+	}
+
+	private static byte[] mapListToArray(List<Byte> values){
+		int numberOfValues = values.size();
+		byte[] primitives = new byte[numberOfValues];
+		for(int i = 0; i < numberOfValues; i++){
+			primitives[i] = values.get(i);
+		}
+		return primitives;
+	}
+
+	private static byte[] getStartValue(byte[] numerator, byte[] dividend){
+		int divLen = dividend.length;
+		byte[] tmp = new byte[divLen];
+		for(int i = 0; i < divLen; i++){
+			tmp[i] = numerator[i];
+		}
+		return tmp;
+	}
+
+	public static byte[] extendByOneDigit(int position, byte[] partialNumeratorValue, byte[] numerator){
+		int currentPos = position;
+		int existingDigits = numerator.length;
+		if(currentPos > existingDigits){
+			return partialNumeratorValue;
+		}else{
+			byte[] extendedPartialNumeratorValue = new byte[currentPos + 1];
+			for(int i = currentPos-1; i >= 0; i--){
+				extendedPartialNumeratorValue[i] = partialNumeratorValue[i+1];
+			}
+			extendedPartialNumeratorValue[extendedPartialNumeratorValue.length -1] = numerator[currentPos];
+			return extendedPartialNumeratorValue;
+		}
+
+
+	}
+
+	public static byte[] checkDividendFitsInPartOfNumberator(byte[] numerator, byte[] dividend){
+		byte[] fittingPart = numerator;
+		if(interalCompareTo(fittingPart, dividend) >= 0){
+			return fittingPart;
+		}else{
+			return new byte[]{0};
+		}
+	}
+
+
 //	private BinaryNumber round(int precision){
 //		int p = countLeadingZeros(this.binary) + precision;
 //		return new BinaryNumber(internalRound(this.binary,p));
 //	}
-//	
+//
 //	private static byte[] internalRound(byte[] bin, int precision){
 //		if(precision > bin.length || precision == 0){
 //			return bin;
@@ -560,13 +626,6 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 //			result[i] = bin[i];
 //		}
 //		return result;
-//		
-//	}
-
-//	private static void printArrayAsInlineString(byte[] bin){
-//		for(byte b:bin){
-//			System.out.print(b);
-//		}
-//		System.out.println();
+//
 //	}
 }
