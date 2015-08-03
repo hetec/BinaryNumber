@@ -4,17 +4,18 @@ import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Objects;
 
+import javax.swing.plaf.synth.SynthScrollBarUI;
+
 public final class BinaryNumber implements Comparable<BinaryNumber>{
 	private static BinaryNumber LIMIT_LONG_MAX = BinaryNumber.of(Long.MAX_VALUE);
-	private static BinaryNumber LIMIT_LONG_MIN = BinaryNumber.of(Long.MIN_VALUE+1);
+	static long min = Long.MIN_VALUE+1;
+	private static BinaryNumber LIMIT_LONG_MIN = BinaryNumber.of(min);
 	
 	private final byte[] binary;;
 	private final int len;	
 	
 	private BinaryNumber(byte[] binary) {
-		System.out.println("Binary interal: " + Arrays.toString(binary));
 		int index = 0;
-		System.out.println("Length: " + binary.length);
 		byte[] tmp = new byte[binary.length];
 		for(byte positon : binary){
 			if(positon > 1 || positon < 0)
@@ -22,13 +23,11 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 			tmp[index] = binary[index];
 			index++;
 		}
-		System.out.println("Generated: " + Arrays.toString(tmp));
 		this.len = tmp.length;
 		this.binary = tmp;
 	}
 	
 	public static BinaryNumber of(byte[] binary){
-		System.out.println("Binary external: " + Arrays.toString(binary));
 		byte[] bin = extendToNextTowsExponent(binary);
 		return new BinaryNumber(bin);
 	}
@@ -60,6 +59,7 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 	}
 	
 	public static BinaryNumber of(long dezimal){
+		System.out.println("Long value: " + dezimal);
 		boolean isNeg = false;
 		if(dezimal < 0){
 			if(dezimal < Long.MIN_VALUE + 1)
@@ -135,6 +135,8 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 	}
 	
 	public long asLong(){
+		System.out.println("THIS > MAX: " + (this.compareTo(LIMIT_LONG_MAX) > 0));
+		System.out.println("THIS < MIN: " + (this.compareTo(LIMIT_LONG_MIN) < 0) + "; Min = " + LIMIT_LONG_MIN);
 		if(this.compareTo(LIMIT_LONG_MAX) > 0 || this.compareTo(LIMIT_LONG_MIN) < 0){
 				throw new IllegalStateException("The assigned binary number is to large or \nsmall to be converted into a long value");
 		}
@@ -217,8 +219,42 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 	}
 	
 	public int compareTo(BinaryNumber bin) {
-		byte[] binBytes = removeLeadingZeros(bin.binary);
-		byte[] thisBytes = removeLeadingZeros(this.binary);
+		boolean thisNeg = isNegative(this.binary);
+		boolean binNeg = isNegative(bin.binary);
+		if(thisNeg == true && binNeg == false){
+			return -1;
+		}else if(thisNeg == false && binNeg == true){
+			return 1;
+		}else if(thisNeg == true && binNeg == true){
+			return -1 * interalCompareTo(this.binary, bin.binary);
+		}else{
+			return interalCompareTo(this.binary, bin.binary);
+		}
+		
+		
+//		byte[] binBytes = removeLeadingZeros(bin.binary);
+//		System.out.println("binBytes: " + Arrays.toString(binBytes));
+//		byte[] thisBytes = removeLeadingZeros(this.binary);
+//		System.out.println("thisBytes: " + Arrays.toString(thisBytes));
+//		long binBytesLen = binBytes.length;
+//		long thisBytesLen = thisBytes.length;
+//		if(binBytesLen != thisBytesLen){
+//			return (binBytesLen > thisBytesLen)? -1 : 1;
+//		}
+//		for(int i = 0; i < binBytesLen; i++){
+//			byte binDigit = binBytes[i];
+//			byte thisDigit = thisBytes[i];
+//			if(binDigit != thisDigit)
+//				return (binDigit > thisDigit)?-1:1;
+//		}
+//		return 0;
+	}
+	
+	private static int interalCompareTo(byte[] bin1, byte[] bin2){
+		byte[] binBytes = removeLeadingZeros(bin2);
+		System.out.println("binBytes: " + Arrays.toString(binBytes));
+		byte[] thisBytes = removeLeadingZeros(bin1);
+		System.out.println("thisBytes: " + Arrays.toString(thisBytes));
 		long binBytesLen = binBytes.length;
 		long thisBytesLen = thisBytes.length;
 		if(binBytesLen != thisBytesLen){
@@ -476,7 +512,6 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 	
 	private static byte[] extendToNextTowsExponent(byte[] bin){
 		int len = getNextValidNumberOfBits(bin);
-		System.out.println("Valid len: " + len);
 		return fillBinarayNumberWithZeros(bin, len);
 	}
 	
@@ -486,7 +521,6 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 			return 1;
 		}
 		int currentExp =  (int)(Math.log(len) / Math.log(2));
-		System.out.println("EXPO: " + currentExp);
 		if(currentExp % 2 != 0 && len % 2 == 0){
 			currentExp++;
 		}else if(len % 2 != 0){
@@ -496,7 +530,6 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 		}else if(((int)Math.pow(2, currentExp)) < len){
 			currentExp++;
 		}
-		System.out.println("REAL EXPO: " + currentExp);
 		int newlength = (int)Math.pow(2, currentExp);
 		return newlength;
 	}

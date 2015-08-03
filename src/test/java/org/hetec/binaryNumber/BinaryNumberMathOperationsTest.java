@@ -5,6 +5,7 @@ import java.math.BigInteger;
 
 import org.hetc.binaryNumber.BinaryNumber;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class BinaryNumberMathOperationsTest {
@@ -177,7 +178,7 @@ public class BinaryNumberMathOperationsTest {
 	
 	//divide
 	
-	@Test
+	@Test @Ignore
 	public void testDivideForPosNumbers(){
 		BinaryNumber thirty = BinaryNumber.of(new byte[]{1,1,1,1,0});
 		BinaryNumber twenty = BinaryNumber.of(new byte[]{0,1,0,1,0});

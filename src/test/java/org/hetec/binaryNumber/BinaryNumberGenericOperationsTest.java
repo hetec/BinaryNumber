@@ -226,5 +226,20 @@ public class BinaryNumberGenericOperationsTest {
 			assertEquals(-1, zeroStTwelve);
 		}
 		
+		@Test
+		public void testCompareToWithNegNumbers(){
+			BinaryNumber negTen = BinaryNumber.of(-10);
+			BinaryNumber ten = BinaryNumber.of(10);
+			BinaryNumber negSix = BinaryNumber.of(-6);
+			int negTenStTen = negTen.compareTo(ten);
+			int TenLtNegTen = ten.compareTo(negTen);
+			int negTenEquals = negTen.compareTo(negTen);
+			int negTenStNegSix = negTen.compareTo(negSix);
+			assertEquals(-1, negTenStTen);
+			assertEquals(1, TenLtNegTen);
+			assertEquals(0, negTenEquals);
+			assertEquals(-1, negTenStNegSix);
+		}
+		
 
 }
