@@ -31,6 +31,12 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 		return new BinaryNumber(bin);
 	}
 
+	public static BinaryNumber of(byte[] binary, boolean isNegative) {
+		return isNegative ?
+				new BinaryNumber(removeLeadingZeros(binary)) :
+				of(binary);
+	}
+
 	public static BinaryNumber of(BigInteger bigInt){
 		boolean isNegative = false;
 		if(bigInt.compareTo(new BigInteger("0")) < 0){
@@ -607,7 +613,6 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 			return new byte[]{0};
 		}
 	}
-
 
 //	private BinaryNumber round(int precision){
 //		int p = countLeadingZeros(this.binary) + precision;
