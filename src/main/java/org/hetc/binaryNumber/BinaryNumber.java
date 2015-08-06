@@ -54,13 +54,39 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 	}
 
 	public static BinaryNumber of(String binary){
+		checkStringIsValidBinNumber(binary);
+		boolean isNeg = getSignOfBinaryNumberFromString(binary);
+		if(isNeg){
+			binary = binary.substring(1);
+		}
 		byte[] bin = new byte[binary.length()];
 		char[] digits = binary.toCharArray();
 		for(int i = 0; i < binary.length(); i++){
 			bin[i] = Byte.parseByte(String.valueOf(digits[i]));
 		}
 		bin = extendToNextTowsExponent(bin);
+		if(isNeg){
+			bin = internalTowsComplement(bin);
+		}
 		return new BinaryNumber(bin);
+	}
+
+	private static void checkStringIsValidBinNumber(String bin){
+		char firstDigit = bin.charAt(0);
+		System.out.println("First Char: " + firstDigit);
+		if(firstDigit != '0' && firstDigit != '1' && firstDigit != '-'){
+			throw new IllegalArgumentException("Invalid charackter for the first digit of the String"
+					+ " - must be 0, 1 or '-'");
+		}
+
+	}
+
+	private static boolean getSignOfBinaryNumberFromString(String bin){
+		char firstDigit = bin.charAt(0);
+		boolean isNeg = false;
+		if(firstDigit == '-')
+			isNeg = true;
+		return isNeg;
 	}
 
 	public static BinaryNumber of(long dezimal){

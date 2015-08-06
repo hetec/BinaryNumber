@@ -200,4 +200,18 @@ public class BinaryNumberGenerationTest {
 		assertEquals(twenty, fourBit.toString());
 	}
 
+	@Test
+	public void testOfStringForNegNumbers(){
+		BinaryNumber testNumber = BinaryNumber.of("-0100");
+		BinaryNumber testNumber1 = BinaryNumber.of("-1000");
+		assertEquals(negFour, testNumber.toString());
+		assertEquals(BinaryNumber.of(-8), testNumber1);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testOfStringForIllegalNegNumbers(){
+		BinaryNumber.of(" 0100");
+		BinaryNumber.of("ab0100");
+	}
+
 }
