@@ -658,6 +658,11 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 		}
 	}
 
+	public byte[] asByteArray() {
+		// TODO Auto-generated method stub
+		return this.binary;
+	}
+
 //	private BinaryNumber round(int precision){
 //		int p = countLeadingZeros(this.binary) + precision;
 //		return new BinaryNumber(internalRound(this.binary,p));
