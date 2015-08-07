@@ -36,7 +36,7 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 		byte[] tmp = new byte[binary.length];
 		for(byte positon : binary){
 			if(positon > 1 || positon < 0)
-				throw new IllegalArgumentException("The binary number must not contain numbers different to 0 and 1");
+				throw new NumberFormatException("The binary number must not contain numbers different to 0 and 1");
 			tmp[index] = binary[index];
 			index++;
 		}
@@ -93,7 +93,7 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 		char firstDigit = bin.charAt(0);
 		System.out.println("First Char: " + firstDigit);
 		if(firstDigit != '0' && firstDigit != '1' && firstDigit != '-'){
-			throw new IllegalArgumentException("Invalid charackter for the first digit of the String"
+			throw new NumberFormatException("Invalid charackter for the first digit of the String"
 					+ " - must be 0, 1 or '-'");
 		}
 
@@ -570,7 +570,7 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 		if(isNull(this))
 			return new BinaryNumber(new byte[]{0});
 		if(isNull(bin)){
-			throw new IllegalArgumentException("Division by zero is not allowed");
+			throw new ArithmeticException("Division by zero");
 		}
 		if(!isNegative(this.binary) && isNegative(bin.binary)){
 			return new BinaryNumber(internalTowsComplement(

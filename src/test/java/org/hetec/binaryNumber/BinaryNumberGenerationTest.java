@@ -30,6 +30,11 @@ public class BinaryNumberGenerationTest {
 		negTwenty = "11101100";
 	}
 
+	@Test(expected=NumberFormatException.class)
+	public void testGenerationFailsForWrongFromat(){
+		BinaryNumber.of(new byte[]{1,2,0,0,1});
+	}
+
 	//ofByte
 	@Test
 	public void testOfByteArrayWithFourBitNumber(){
@@ -208,7 +213,7 @@ public class BinaryNumberGenerationTest {
 		assertEquals(BinaryNumber.of(-8), testNumber1);
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test(expected = NumberFormatException.class)
 	public void testOfStringForIllegalNegNumbers(){
 		BinaryNumber.of(" 0100");
 		BinaryNumber.of("ab0100");

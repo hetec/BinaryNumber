@@ -206,7 +206,7 @@ public class BinaryNumberMathOperationsTest {
 		assertEquals(BinaryNumber.of(6), six);
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test(expected = ArithmeticException.class)
 	public void testDivideForDivisionByZero(){
 		BinaryNumber zero = BinaryNumber.of(0);
 		BinaryNumber thirty = BinaryNumber.of(30);
