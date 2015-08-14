@@ -6,56 +6,63 @@ import java.math.BigInteger;
 import org.hetc.binaryNumber.BinaryNumber;
 import org.junit.Before;
 import org.junit.Test;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.CoreMatchers.*;
 
 public class BinaryNumberMathOperationsTest {
 
 	private BinaryNumber six;
-	private BinaryNumber negSix;
+	private BinaryNumber minusSix;
 	private BinaryNumber seven;
 	private BinaryNumber zero;
-	private BinaryNumber negSeven;
+	private BinaryNumber minusSeven;
 
 	@Before
 	public void setUp(){
 		six = BinaryNumber.of(6);
 		seven = BinaryNumber.of(7);
 		zero = BinaryNumber.of(0);
-		negSix = BinaryNumber.of(new BigInteger("-6"));
-		negSeven = BinaryNumber.of(new BigInteger("-7"));
+		minusSix = BinaryNumber.of(-6);
+		minusSeven = BinaryNumber.of(-7);
 	}
 
 	//Addition
 
 	@Test
 	public void testAdditionWithTwoPosNumbers(){
-		BinaryNumber result = six.add(seven);
-		BinaryNumber result_reverse = seven.add(six);
-		assertEquals(new BigInteger("13"), result.asBigInt());
-		assertEquals(new BigInteger("13"), result_reverse.asBigInt());
+		BinaryNumber thriteen = six.add(seven);
+		BinaryNumber thriteen_sym = seven.add(six);
+		assertThat(thriteen.asLong(), is(13L));
+		assertThat(thriteen_sym.asLong(), is(13L));
 	}
+	
 
 	@Test
 	public void testAdditionWithOneNumberAndZero(){
-		BinaryNumber result = six.add(zero);
-		BinaryNumber result_reverse = zero.add(six);
-		assertEquals(new BigInteger("6"), result.asBigInt());
-		assertEquals(new BigInteger("6"), result_reverse.asBigInt());
+		BinaryNumber sixPlusZero = six.add(zero);
+		BinaryNumber sixPlusZero_sym = zero.add(six);
+		BinaryNumber minusSixPlusZero = minusSix.add(zero);
+		BinaryNumber zeroPlusMinusSix = zero.add(minusSix);
+		assertThat(sixPlusZero.asLong(), is(6L));
+		assertThat(sixPlusZero_sym.asLong(), is(6L));
+		assertThat(minusSixPlusZero.asLong(), is(-6L));
+		assertThat(zeroPlusMinusSix.asLong(), is(-6L));
 	}
 
 	@Test
 	public void testAdditionWithNegAndPosNumber(){
-		BinaryNumber result = negSix.add(seven);
-		BinaryNumber result2 = negSeven.add(six);
-		assertEquals(new BigInteger("1"), result.asBigInt());
-		assertEquals(new BigInteger("-1"), result2.asBigInt());
+		BinaryNumber one = minusSix.add(seven);
+		BinaryNumber minusOne = six.add(minusSeven);
+		assertThat(one.asLong(), is(1L));
+		assertThat(minusOne.asLong(), is(-1L));
 	}
 
 	@Test
 	public void testAdditionWithTwoNegNumbers(){
-		BinaryNumber result = negSix.add(negSeven);
-		assertEquals(new BigInteger("-13"), result.asBigInt());
+		BinaryNumber minusThirteen = minusSix.add(minusSeven);
+		assertThat(minusThirteen.asLong(), is(-13L));
 	}
-
+	
 	//Subtraction
 
 	@Test
@@ -76,16 +83,16 @@ public class BinaryNumberMathOperationsTest {
 
 	@Test
 	public void testSubtractWithOneNegAndPosNumber(){
-		BinaryNumber result = six.subtract(negSeven);
-		BinaryNumber result2 = negSeven.subtract(six);
+		BinaryNumber result = six.subtract(minusSeven);
+		BinaryNumber result2 = minusSeven.subtract(six);
 		assertEquals("13", result.asBigInt().toString());
 		assertEquals("-13", result2.asBigInt().toString());
 	}
 
 	@Test
 	public void testSubtractWithTwoNegNumbers(){
-		BinaryNumber result = negSix.subtract(negSeven);
-		BinaryNumber result2 = negSeven.subtract(negSix);
+		BinaryNumber result = minusSix.subtract(minusSeven);
+		BinaryNumber result2 = minusSeven.subtract(minusSix);
 		assertEquals("1", result.asBigInt().toString());
 		assertEquals("-1", result2.asBigInt().toString());
 	}
@@ -102,16 +109,16 @@ public class BinaryNumberMathOperationsTest {
 
 	@Test
 	public void testMultiplyWithOnePosAndNegNumber(){
-		BinaryNumber result = six.multiply(negSeven);
-		BinaryNumber result2 = negSeven.multiply(six);
+		BinaryNumber result = six.multiply(minusSeven);
+		BinaryNumber result2 = minusSeven.multiply(six);
 		assertEquals("-42", result.asBigInt().toString());
 		assertEquals("-42", result2.asBigInt().toString());
 	}
 
 	@Test
 	public void testMultiplyWithTwoNegNumbers(){
-		BinaryNumber result = negSix.multiply(negSeven);
-		BinaryNumber result2 = negSeven.multiply(negSix);
+		BinaryNumber result = minusSix.multiply(minusSeven);
+		BinaryNumber result2 = minusSeven.multiply(minusSix);
 		assertEquals("42", result.asBigInt().toString());
 		assertEquals("42", result2.asBigInt().toString());
 	}
@@ -119,7 +126,7 @@ public class BinaryNumberMathOperationsTest {
 	@Test
 	public void testMultiplyWithNumberAndZero(){
 		BinaryNumber result = zero.multiply(seven);
-		BinaryNumber result2 = negSix.multiply(zero);
+		BinaryNumber result2 = minusSix.multiply(zero);
 		assertEquals("0", result.asBigInt().toString());
 		assertEquals("0", result2.asBigInt().toString());
 	}

@@ -1,6 +1,7 @@
 package org.hetc.binaryNumber;
 
 import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -99,7 +100,6 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 
 	private static void checkStringIsValidBinNumber(String bin){
 		char firstDigit = bin.charAt(0);
-		System.out.println("First Char: " + firstDigit);
 		if(firstDigit != ZERO_DIGIT && firstDigit != ONE_DIGIT && firstDigit != MINUS){
 			throw new NumberFormatException("Invalid charackter for the first digit of the String"
 					+ " - must be 0, 1 or '-'");
@@ -136,14 +136,13 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 
 
 	public BinaryNumber add(BinaryNumber bin){
-		BinaryNumber nonNull = getNonNullNumber(this, bin);
-		if(!Objects.nonNull(nonNull))
-			return nonNull;
+		if(checkTwoBinNumbersAreNull(this, bin))
+			return new BinaryNumber(new byte[]{0});
 
 		if(isNegative(this.binary) && !isNegative(bin.binary)){
-			return new BinaryNumber(internalSubtract(bin.binary, internalTowsComplement(this.binary)));
+			return new BinaryNumber(internalSubtract(bin.binary, extendToNextTowsExponent(internalTowsComplement(this.binary))));
 		}else if(!isNegative(this.binary) && isNegative(bin.binary)){
-			return new BinaryNumber(internalSubtract(this.binary, internalTowsComplement(bin.binary)));
+			return new BinaryNumber(internalSubtract(this.binary, extendToNextTowsExponent(internalTowsComplement(bin.binary))));
 		}else if(isNegative(this.binary) && isNegative(bin.binary)){
 			return new BinaryNumber(internalTowsComplement(internalAdd(internalTowsComplement(this.binary), internalTowsComplement(bin.binary))));
 		}else{
@@ -154,9 +153,8 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 	}
 
 	public BinaryNumber subtract(BinaryNumber bin){
-		BinaryNumber nonNull = getNonNullNumber(this, bin);
-		if(!Objects.nonNull(nonNull))
-			return nonNull;
+		if(checkTwoBinNumbersAreNull(this, bin))
+			return new BinaryNumber(new byte[]{0});
 
 		if(!isNegative(this.binary) && isNegative(bin.binary)){
 			return new BinaryNumber(internalAdd(
@@ -311,6 +309,13 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 		return 0;
 	}
 
+	private boolean checkTwoBinNumbersAreNull(BinaryNumber bin1, BinaryNumber bin2) {
+		if(isNull(bin2) && isNull(bin1)){
+			return true;
+		}else{
+			return false;
+		}
+	}
 
 	private static byte[] internalSubtract(byte[] minuend, byte[] subtrahend){
 		byte[] binBinary = subtrahend;
@@ -351,14 +356,6 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 		if((bin[0] == 0 && binLen == 1))
 			hasNull = true;
 		return hasNull;
-	}
-
-	private static BinaryNumber getNonNullNumber(BinaryNumber bin1, BinaryNumber bin2){
-		if(!isNull(bin1))
-			return bin1;
-		if(!isNull(bin2))
-			return bin1;
-		return null;
 	}
 
 	private static byte[] internalMultiply(byte[] multiplicant, byte[] multiplicator){
