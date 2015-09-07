@@ -5,8 +5,9 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({BinaryNumberGenerationTest.class,
-				BinaryNumberMathOperationsTest.class,
-				BinaryNumberOutputTest.class,
-				BinaryNumberGenerationTest.class})
+@SuiteClasses({
+    BinaryNumberGenerationTest.class,
+    BinaryNumberMathOperationsTest.class,
+    BinaryNumberOutputTest.class,
+    BinaryNumberGenericOperationsTest.class})
 public class BinaryNumberTestSuite {}
