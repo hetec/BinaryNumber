@@ -20,23 +20,6 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 	private static final char ONE_DIGIT = '1';
 	private static final char MINUS = '-';
 
-	public static enum Constants{
-		MAX_LONG_VALUE(BinaryNumber.of(Long.MAX_VALUE)),
-		MIN_LONG_VALUE(BinaryNumber.of(Long.MIN_VALUE+1)),
-		ONE(BinaryNumber.of(1)),
-		ZERO(BinaryNumber.of(0));
-
-		private final BinaryNumber value;
-
-		private Constants(BinaryNumber value){
-			this.value = value;
-		}
-
-		public BinaryNumber value(){
-			return this.value;
-		}
-	}
-
 	private final byte[] binary;;
 	private final int len;
 
@@ -678,23 +661,4 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 		return this.binary;
 	}
 
-//	private BinaryNumber round(int precision){
-//		int p = countLeadingZeros(this.binary) + precision;
-//		return new BinaryNumber(internalRound(this.binary,p));
-//	}
-//
-//	private static byte[] internalRound(byte[] bin, int precision){
-//		if(precision > bin.length || precision == 0){
-//			return bin;
-//		}
-//		byte[] preNum = new byte[bin.length];
-//		preNum[precision] = 1;
-//		bin = internalAdd(bin, preNum);
-//		byte[] result = new byte[precision];
-//		for(int i=0; i < precision; i++){
-//			result[i] = bin[i];
-//		}
-//		return result;
-//
-//	}
 }
