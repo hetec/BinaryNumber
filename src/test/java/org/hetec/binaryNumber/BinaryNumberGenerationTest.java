@@ -43,6 +43,11 @@ public class BinaryNumberGenerationTest {
 		BinaryNumber.of(new byte[]{1,2,0,0,1});
 	}
         
+        @Test(expected = IllegalArgumentException.class)
+        public void testInvalidEmptyByteArray(){
+            BinaryNumber.of(new byte[]{});
+        }
+        
 	@Test
 	public void testOfByteArrayForDiffBits(){
             assertThat(BinaryNumber.of(new byte[]{0,1,0,0}).toString(), equalTo(four));

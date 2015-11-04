@@ -37,6 +37,9 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 	}
 
 	public static BinaryNumber of(byte[] binary){
+                if(binary.length <= 0){
+                    throw new IllegalArgumentException("No valid binary number!");
+                }
 		byte[] bin = extendToNextTowsExponent(binary);
 		return new BinaryNumber(bin);
 	}
