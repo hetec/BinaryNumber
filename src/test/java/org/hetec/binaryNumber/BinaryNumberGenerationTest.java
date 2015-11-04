@@ -70,6 +70,11 @@ public class BinaryNumberGenerationTest {
 	}
 
 	//ofBigInt
+        @Test(expected = IllegalArgumentException.class)
+        public void testInvalidBigInt(){
+            BinaryNumber.of(new BigInteger(""));
+        }
+        
 	@Test
 	public void testOfBigIntforPosNumbers(){
             assertThat(BinaryNumber.of(new BigInteger("0")).toString(), equalTo("0"));
@@ -113,7 +118,6 @@ public class BinaryNumberGenerationTest {
 	}
 
 	//string
-        
         @Test(expected = IllegalArgumentException.class)
         public void testInvalidEmptyString(){
             BinaryNumber.of("");
