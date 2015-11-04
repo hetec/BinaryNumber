@@ -108,6 +108,12 @@ public class BinaryNumberGenerationTest {
 	}
 
 	//string
+        
+        @Test(expected = IllegalArgumentException.class)
+        public void testInvalidEmptyString(){
+            BinaryNumber.of("");
+        }
+        
 	@Test
 	public void testOfStringWithZero(){
             assertThat(BinaryNumber.of("0").toString(), equalTo("0"));

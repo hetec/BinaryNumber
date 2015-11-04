@@ -64,6 +64,9 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 	}
 
 	public static BinaryNumber of(String binary){
+                if(binary.isEmpty()){
+                    throw new IllegalArgumentException("No vailid binary Number!");
+                }
 		checkStringIsValidBinNumber(binary);
 		boolean isNeg = getSignOfBinaryNumberFromString(binary);
 		if(isNeg){
