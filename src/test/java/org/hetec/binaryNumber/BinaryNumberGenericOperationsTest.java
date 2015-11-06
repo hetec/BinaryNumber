@@ -1,12 +1,8 @@
 package org.hetec.binaryNumber;
 
-import static org.junit.Assert.*;
-
-import java.math.BigInteger;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import org.hetc.binaryNumber.BinaryNumber;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -127,5 +123,14 @@ public class BinaryNumberGenericOperationsTest {
             assertThat(four.compareTo(zero), greaterThanOrEqualTo(1));
             assertThat(ten.compareTo(four), greaterThanOrEqualTo(1));
             assertThat(ten.compareTo(zero), greaterThanOrEqualTo(1));
+    }
+
+    //isNegative
+
+    @Test
+    public void testIsNegative(){
+        assertThat(minusTen.isNegative(), equalTo(true));
+        assertThat(ten.isNegative(), equalTo(false));
+        assertThat(zero.isNegative(), equalTo(false));
     }
 }

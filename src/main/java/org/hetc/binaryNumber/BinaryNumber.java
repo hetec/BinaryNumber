@@ -22,7 +22,7 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 
 	private final byte[] binary;;
 	private final int len;
-
+        
 	private BinaryNumber(byte[] binary) {
 		int index = 0;
 		byte[] tmp = new byte[binary.length];
@@ -174,6 +174,10 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 
 	public BinaryNumber invert(){
 		return new BinaryNumber(invert(this.binary));
+	}
+
+	public boolean isNegative(){
+		return isNegative(this.binary);
 	}
 
 	public long asLong(){
@@ -666,5 +670,4 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 		// TODO Auto-generated method stub
 		return this.binary;
 	}
-
 }
