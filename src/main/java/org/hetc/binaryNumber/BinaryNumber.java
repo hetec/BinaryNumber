@@ -670,4 +670,16 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 		// TODO Auto-generated method stub
 		return this.binary;
 	}
+
+	public String toSignedString() {
+		boolean isNeg = this.isNegative();
+		String bin = "+";
+		if(isNeg){
+			bin = "-";
+			bin += this.towsComplement().removeLeadingZeros().toString();
+		}else{
+			bin += this.removeLeadingZeros().toString();
+		}
+		return bin;
+	}
 }
