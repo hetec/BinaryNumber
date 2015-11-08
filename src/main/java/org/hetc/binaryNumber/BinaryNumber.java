@@ -18,8 +18,7 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 	private static final char MINUS = '-';
 
 	private final byte[] binary;;
-	private final int len;
-        
+
 	private BinaryNumber(byte[] binary) {
 		int index = 0;
 		byte[] tmp = new byte[binary.length];
@@ -29,7 +28,6 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 			tmp[index] = binary[index];
 			index++;
 		}
-		this.len = tmp.length;
 		this.binary = tmp;
 	}
 
@@ -300,11 +298,7 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 	}
 
 	private boolean checkTwoBinNumbersAreNull(BinaryNumber bin1, BinaryNumber bin2) {
-		if(isNull(bin2) && isNull(bin1)){
-			return true;
-		}else{
-			return false;
-		}
+        return isNull(bin2) && isNull(bin1);
 	}
 
 	private static byte[] internalSubtract(byte[] minuend, byte[] subtrahend){
@@ -329,12 +323,9 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 
 	private static boolean isNegative(byte[] bin){
 		int sign = bin[0];
-		if(sign == 1){
-			return true;
-		}
+        return sign == 1;
 
-		return false;
-	}
+    }
 
 	private static boolean isNull(BinaryNumber bin){
 		return isNull(bin.binary);
@@ -567,8 +558,7 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 		}else if(((int)Math.pow(2, currentExp)) < binLen){
 			currentExp++;
 		}
-		int lenOfNextTwosExp = (int)Math.pow(2, currentExp);
-		return lenOfNextTwosExp;
+        return (int)Math.pow(2, currentExp);
 	}
 
 	public BinaryNumber divide(BinaryNumber bin){
@@ -630,27 +620,19 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 	private static byte[] getStartValue(byte[] numerator, byte[] dividend){
 		int divLen = dividend.length;
 		byte[] startValue = new byte[divLen];
-		for(int i = 0; i < divLen; i++){
-			startValue[i] = numerator[i];
-		}
+        System.arraycopy(numerator, 0, startValue, 0, divLen);
 		return startValue;
 	}
 
 	private static byte[] extendPartialNumerator(byte[] currentPart, byte[] numerator, int currentPos){
 		byte[] tmp = new byte[currentPart.length + 1];
-		for(int i = 0; i < currentPart.length; i++){
-			tmp[i] = currentPart[i];
-		}
+        System.arraycopy(currentPart, 0, tmp, 0, currentPart.length);
 		tmp[currentPart.length] = numerator[currentPos];
 		return tmp;
 	}
 
 	private static boolean checkDividendFitsInPartOfNumberator(byte[] numerator, byte[] dividend){
-		if(interalCompareTo(numerator, dividend) >= 0){
-			return true;
-		}else{
-			return false;
-		}
+        return interalCompareTo(numerator, dividend) >= 0;
 	}
 
 	public byte[] asByteArray() {
