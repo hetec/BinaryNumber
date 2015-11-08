@@ -1,10 +1,7 @@
 package org.hetc.binaryNumber;
 
 import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public final class BinaryNumber implements Comparable<BinaryNumber>{
 
@@ -594,29 +591,28 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 		}
 	}
 
-	private static byte[] internalDivide(byte[] numerator, byte[] dividend) {
-		byte[] internalNumerator = removeLeadingZeros(numerator);
-		byte[] internalDividend = removeLeadingZeros(dividend);
-		List<Byte> result = new LinkedList<>();
-		byte[] partialNumeratorValue = getStartValue(internalNumerator, internalDividend);
-		byte[] partialDividendValue = internalDividend;
-		byte[] partialNumeratorValueExtendedByOneDigit = getStartValue(internalNumerator, internalDividend);//extendToNextTowsExponent(binBinary);
-		int posistion = internalDividend.length;
-		int stepCounter = 0;
+	private static byte[] internalDivide(byte[] numerator, byte[] dividend){
+		numerator = removeLeadingZeros(numerator);
+		dividend = removeLeadingZeros(dividend);
+		if(interalCompareTo(dividend,numerator) > 0){
+			return new byte[]{0};
+		}
+		List<Byte> result = new ArrayList<>();
+		byte[] partialNumerator = getStartValue(numerator, dividend);
+		int position = partialNumerator.length;
 		while(true){
-			partialNumeratorValue = checkDividendFitsInPartOfNumberator(partialNumeratorValue, internalDividend);
-			result.add(isNull(partialNumeratorValue)?(byte)0:(byte)1);
-			if(posistion >= internalNumerator.length){
+			if(!checkDividendFitsInPartOfNumberator(partialNumerator, dividend)){
+				result.add((byte)0);
+			}else {
+				result.add((byte)1);
+				partialNumerator = internalSubtract(partialNumerator,dividend);
+				partialNumerator = removeLeadingZeros(partialNumerator);
+			}
+			if(position > numerator.length-1){
 				break;
 			}
-			if(stepCounter > 0)
-				partialDividendValue = partialNumeratorValue;
-			partialNumeratorValue = internalSubtract(partialNumeratorValueExtendedByOneDigit,partialDividendValue);//dividend was tmp before
-			partialNumeratorValueExtendedByOneDigit = extendByOneDigit(posistion, partialNumeratorValue, internalNumerator);
-			partialNumeratorValue = partialNumeratorValueExtendedByOneDigit;
-			posistion++;
-			stepCounter++;
-
+			partialNumerator = extendPartialNumerator(partialNumerator, numerator, position);
+			position++;
 		}
 		byte[] resultAsBytes = mapListToArray(result);
 		return extendToNextTowsExponent(resultAsBytes);
@@ -640,34 +636,24 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 		return startValue;
 	}
 
-	public static byte[] extendByOneDigit(int position, byte[] partialNumeratorValue, byte[] numerator){
-		int currentPos = position;
-		int existingDigits = numerator.length;
-		if(currentPos > existingDigits){
-			return partialNumeratorValue;
-		}else{
-			byte[] extendedPartialNumeratorValue = new byte[currentPos + 1];
-			for(int i = currentPos-1; i >= 0; i--){
-				extendedPartialNumeratorValue[i] = partialNumeratorValue[i+1];
-			}
-			extendedPartialNumeratorValue[extendedPartialNumeratorValue.length -1] = numerator[currentPos];
-			return extendedPartialNumeratorValue;
+	private static byte[] extendPartialNumerator(byte[] currentPart, byte[] numerator, int currentPos){
+		byte[] tmp = new byte[currentPart.length + 1];
+		for(int i = 0; i < currentPart.length; i++){
+			tmp[i] = currentPart[i];
 		}
-
-
+		tmp[currentPart.length] = numerator[currentPos];
+		return tmp;
 	}
 
-	public static byte[] checkDividendFitsInPartOfNumberator(byte[] numerator, byte[] dividend){
-		byte[] fittingPart = numerator;
-		if(interalCompareTo(fittingPart, dividend) >= 0){
-			return fittingPart;
+	private static boolean checkDividendFitsInPartOfNumberator(byte[] numerator, byte[] dividend){
+		if(interalCompareTo(numerator, dividend) >= 0){
+			return true;
 		}else{
-			return new byte[]{0};
+			return false;
 		}
 	}
 
 	public byte[] asByteArray() {
-		// TODO Auto-generated method stub
 		return this.binary;
 	}
 
