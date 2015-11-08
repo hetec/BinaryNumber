@@ -654,7 +654,7 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 	}
 
 	public byte[] asByteArray() {
-		return this.binary;
+		return Arrays.copyOf(this.binary, this.binary.length);
 	}
 
 	public String toSignedString() {
