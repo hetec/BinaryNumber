@@ -3,6 +3,7 @@ import static org.junit.Assert.assertEquals;
 
 
 import org.hetc.binaryNumber.BinaryNumber;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -184,14 +185,17 @@ public class BinaryNumberMathOperationsTest {
 	//divide
 
 	@Test
-	public void testDivideForPosNumbers(){
-            BinaryNumber five = thirty.divide(six);
-            BinaryNumber local_zero = zero.divide(six);
-            BinaryNumber four = thirty.divide(seven);
-            assertThat(BinaryNumber.of(5), equalTo(five));
-            assertThat(BinaryNumber.of(0), equalTo(local_zero));
-            assertThat(BinaryNumber.of(4), equalTo(four));
+	public void testDividendLessThandStartPart(){
+        BinaryNumber five = thirty.divide(six);
+        BinaryNumber local_zero = zero.divide(six);
+        BinaryNumber four = thirty.divide(seven);
+        BinaryNumber fiveTest = BinaryNumber.of(4);
+        System.out.print("TEST: " + five);
+        assertThat(BinaryNumber.of(5), equalTo(five));
+        assertThat(BinaryNumber.of(0), equalTo(local_zero));
+        assertThat(BinaryNumber.of(4), equalTo(four));
 	}
+
 
 	@Test
 	public void testDivideForPosAndNegNumbers(){
@@ -201,7 +205,15 @@ public class BinaryNumberMathOperationsTest {
             assertThat(BinaryNumber.of(-5), equalTo(minusFive));
             assertThat(BinaryNumber.of(-5), equalTo(minusFive_inverted));
             assertThat(BinaryNumber.of(5), equalTo(five));
-	}
+    }
+
+    @Test
+    public void testDividendGreaterThandStartPart(){
+        BinaryNumber three = BinaryNumber.of("10000").divide(BinaryNumber.of("101"));//16/5
+        BinaryNumber minusThree = BinaryNumber.of(-16).divide(BinaryNumber.of(5));
+        assertThat(BinaryNumber.of(3), equalTo(three));
+        assertThat(BinaryNumber.of(-3), equalTo(minusThree));
+    }
 
 	@Test(expected = ArithmeticException.class)
 	public void testDivideForDivequalToionByZero(){
