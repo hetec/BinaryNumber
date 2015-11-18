@@ -147,7 +147,7 @@ public class BinaryNumberMathOperationsTest {
 	public void testInvert(){
             BinaryNumber num = BinaryNumber.of(new byte[]{0,0,1,1,0,1});
             BinaryNumber inverted = num.invert();
-            assertThat(BinaryNumber.of(new byte[]{1,1,1,1,0,0,1,0}), equalTo(inverted));
+            assertThat(BinaryNumber.of(new byte[]{1,1,1,1,0,0,1,0}, true), equalTo(inverted));
             assertThat(inverted.invert(), equalTo(num));
 	}
 
@@ -155,7 +155,7 @@ public class BinaryNumberMathOperationsTest {
 	public void testInvertZero(){
             BinaryNumber num = BinaryNumber.of(new byte[]{0});
             BinaryNumber inverted = num.invert();
-            assertThat(BinaryNumber.of(new byte[]{1}), equalTo(inverted));
+            assertThat(BinaryNumber.of(new byte[]{1}, true), equalTo(inverted));
 	}
 
 	//removeLeadingZeros
@@ -163,10 +163,10 @@ public class BinaryNumberMathOperationsTest {
 	@Test
 	public void testRemoveLeadingZeros(){
             BinaryNumber leadingZeros = BinaryNumber.of(new byte[]{0,0,1,1,0,1});
-            BinaryNumber noLeadingZeros = BinaryNumber.of(new byte[]{1,1,0,1});
+            BinaryNumber noLeadingZeros = BinaryNumber.of(new byte[]{1,1,0,1}, true);
             BinaryNumber onlyZeros = BinaryNumber.of(new byte[]{0,0,0,0});
-            assertThat(BinaryNumber.of(new byte[]{1,1,0,1}), equalTo(leadingZeros.removeLeadingZeros()));
-            assertThat(BinaryNumber.of(new byte[]{1,1,0,1}), equalTo(noLeadingZeros.removeLeadingZeros()));
+            assertThat(BinaryNumber.of(new byte[]{1,1,0,1}, true), equalTo(leadingZeros.removeLeadingZeros()));
+            assertThat(BinaryNumber.of(new byte[]{1,1,0,1}, true), equalTo(noLeadingZeros.removeLeadingZeros()));
             assertThat(BinaryNumber.of(new byte[]{0}), equalTo(onlyZeros.removeLeadingZeros()));
 	}
 
@@ -177,9 +177,9 @@ public class BinaryNumberMathOperationsTest {
             BinaryNumber leadingZeros = BinaryNumber.of(new byte[]{0,0,1,1,0,1});
             BinaryNumber local_zero = BinaryNumber.of(new byte[]{0});
             BinaryNumber noZeros = BinaryNumber.of(new byte[]{1,1,0,1});
-            assertThat(BinaryNumber.of(new byte[]{1,1,1,1,0,0,1,1}), equalTo(leadingZeros.towsComplement()));
+            assertThat(BinaryNumber.of(new byte[]{1,1,1,1,0,0,1,1}, true), equalTo(leadingZeros.towsComplement()));
             assertThat(BinaryNumber.of(new byte[]{0}), equalTo(local_zero.towsComplement()));
-            assertThat(BinaryNumber.of(new byte[]{1,1,1,1,0,0,1,1}), equalTo(noZeros.towsComplement()));
+            assertThat(BinaryNumber.of(new byte[]{1,1,1,1,0,0,1,1}, true), equalTo(noZeros.towsComplement()));
 	}
 
 	//divide

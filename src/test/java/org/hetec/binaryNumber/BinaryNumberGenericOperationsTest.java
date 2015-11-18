@@ -16,6 +16,8 @@ public class BinaryNumberGenericOperationsTest {
     private static BinaryNumber minusFour;
     private static BinaryNumber zero;
     private static BinaryNumber zeroClone;
+    private static BinaryNumber minusTwentyOne;
+    private static BinaryNumber twoHundredAndThiryFive;
 
     @BeforeClass
     public static void setUp(){
@@ -27,6 +29,8 @@ public class BinaryNumberGenericOperationsTest {
         minusFour = BinaryNumber.of(-4);
         zero = BinaryNumber.of(0);
         zeroClone = BinaryNumber.of(0);
+        minusTwentyOne = BinaryNumber.of(new byte[]{1,1,1,0,1,0,1,1}, true);
+        twoHundredAndThiryFive = BinaryNumber.of(new byte[]{1,1,1,0,1,0,1,1}, false);
     }
     
     @Test
@@ -48,7 +52,11 @@ public class BinaryNumberGenericOperationsTest {
     public void testNotEqualsForMixedNumbers(){
         assertThat(minusTen, not(equalTo(ten)));
         assertThat(minusFour, not(equalTo(ten)));
-        
+    }
+
+    @Test
+    public void testMixedNumbersForByteArrayGeneration(){
+        assertThat(twoHundredAndThiryFive, is(not(equalTo(minusTwentyOne))));
     }
 
     @Test

@@ -235,8 +235,8 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 			return false;
 
 		BinaryNumber binary = (BinaryNumber)bin;
-		byte[] binaryBytes = removeLeadingZeros(binary.binary);
-		byte[] thisBytes = removeLeadingZeros(this.binary);
+		byte[] binaryBytes = binary.binary;
+		byte[] thisBytes = this.binary;
 		int binaryLen = binaryBytes.length;
 		int thisLen = thisBytes.length;
 		if(binaryLen != thisLen){
