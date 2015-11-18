@@ -9,5 +9,6 @@ import org.junit.runners.Suite.SuiteClasses;
     BinaryNumberGenerationTest.class,
     BinaryNumberMathOperationsTest.class,
     BinaryNumberOutputTest.class,
-    BinaryNumberGenericOperationsTest.class})
+    BinaryNumberGenericOperationsTest.class,
+    BinaryNumberFactoryTest.class})
 public class BinaryNumberTestSuite {}

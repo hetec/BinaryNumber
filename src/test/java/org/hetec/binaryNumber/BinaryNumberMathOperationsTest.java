@@ -190,7 +190,6 @@ public class BinaryNumberMathOperationsTest {
         BinaryNumber local_zero = zero.divide(six);
         BinaryNumber four = thirty.divide(seven);
         BinaryNumber fiveTest = BinaryNumber.of(4);
-        System.out.print("TEST: " + five);
         assertThat(BinaryNumber.of(5), equalTo(five));
         assertThat(BinaryNumber.of(0), equalTo(local_zero));
         assertThat(BinaryNumber.of(4), equalTo(four));
