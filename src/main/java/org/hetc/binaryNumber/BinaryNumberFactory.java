@@ -7,6 +7,10 @@ import java.math.BigInteger;
  */
 public class BinaryNumberFactory {
 
+    public BinaryNumberFactory (){
+
+    }
+
     public BinaryNumber instanceOf(String binaryNumber){
         return BinaryNumber.of(binaryNumber);
     }
