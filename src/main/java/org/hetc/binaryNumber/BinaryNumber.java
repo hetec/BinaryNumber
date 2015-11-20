@@ -641,7 +641,7 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 
 	public String toSignedString() {
 		boolean isNeg = this.isNegative();
-		String bin = "+";
+		String bin = "";
 		if(isNeg){
 			bin = "-";
 			bin += this.towsComplement().removeLeadingZeros().toString();
