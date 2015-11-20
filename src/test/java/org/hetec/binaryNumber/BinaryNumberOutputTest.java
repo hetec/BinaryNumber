@@ -118,12 +118,12 @@ public class BinaryNumberOutputTest {
 
 	@Test
 	public void testToSignedString(){
-		assertThat(fourtyFive.toSignedString(), is(equalTo("+101101")));
+		assertThat(fourtyFive.toSignedString(), is(equalTo("101101")));
 		assertThat(minusTen.toSignedString(), is(equalTo("-1010")));
-		assertThat(seven.toSignedString(), is(equalTo("+111")));
+		assertThat(seven.toSignedString(), is(equalTo("111")));
 		assertThat(minusSeven.toSignedString(), is(equalTo("-111")));
-		assertThat(zero.toSignedString(), is(equalTo("+0")));
-		assertThat(one.toSignedString(), is(equalTo("+1")));
+		assertThat(zero.toSignedString(), is(equalTo("0")));
+		assertThat(one.toSignedString(), is(equalTo("1")));
 	}
 
 
