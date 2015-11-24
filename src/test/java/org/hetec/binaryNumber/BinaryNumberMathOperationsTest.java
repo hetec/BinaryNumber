@@ -3,8 +3,6 @@ import static org.junit.Assert.assertEquals;
 
 
 import org.hetc.binaryNumber.BinaryNumber;
-import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.CoreMatchers.*;
@@ -177,9 +175,9 @@ public class BinaryNumberMathOperationsTest {
             BinaryNumber leadingZeros = BinaryNumber.of(new byte[]{0,0,1,1,0,1});
             BinaryNumber local_zero = BinaryNumber.of(new byte[]{0});
             BinaryNumber noZeros = BinaryNumber.of(new byte[]{1,1,0,1});
-            assertThat(BinaryNumber.of(new byte[]{1,1,1,1,0,0,1,1}, true), equalTo(leadingZeros.towsComplement()));
-            assertThat(BinaryNumber.of(new byte[]{0}), equalTo(local_zero.towsComplement()));
-            assertThat(BinaryNumber.of(new byte[]{1,1,1,1,0,0,1,1}, true), equalTo(noZeros.towsComplement()));
+            assertThat(BinaryNumber.of(new byte[]{1,1,1,1,0,0,1,1}, true), equalTo(leadingZeros.twosComplement()));
+            assertThat(BinaryNumber.of(new byte[]{0}), equalTo(local_zero.twosComplement()));
+            assertThat(BinaryNumber.of(new byte[]{1,1,1,1,0,0,1,1}, true), equalTo(noZeros.twosComplement()));
 	}
 
 	//divide

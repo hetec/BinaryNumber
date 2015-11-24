@@ -35,7 +35,7 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
                 if(binary.length <= 0){
                     throw new IllegalArgumentException("No valid binary number!");
                 }
-		byte[] bin = extendToNextTowsExponent(binary);
+		byte[] bin = extendToNextTwosExponent(binary);
 		return new BinaryNumber(bin);
 	}
 
@@ -54,9 +54,9 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 		int size = getNeededArraySizeForBigInt(bigInt);
 		byte[] binNumber = new byte[size];
 		calcBinaryNumberOfBigInt(bigInt, binNumber, binNumber.length);
-		binNumber = extendToNextTowsExponent(binNumber);
+		binNumber = extendToNextTwosExponent(binNumber);
 		if(isNegative){
-			binNumber = internalTowsComplement(binNumber);
+			binNumber = internalTwosComplement(binNumber);
 		}
 		return new BinaryNumber(binNumber);
 	}
@@ -75,9 +75,9 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 		for(int i = 0; i < binary.length(); i++){
 			bin[i] = Byte.parseByte(String.valueOf(digits[i]));
 		}
-		bin = extendToNextTowsExponent(bin);
+		bin = extendToNextTwosExponent(bin);
 		if(isNeg){
-			bin = internalTowsComplement(bin);
+			bin = internalTwosComplement(bin);
 		}
 		return new BinaryNumber(bin);
 	}
@@ -111,9 +111,9 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 		int size = getNeededArraySizeForDezimal(dezimal);
 		byte[] binNumber = new byte[size];
 		calcBinaryNumberOfLong(dezimal, binNumber, binNumber.length);
-		binNumber = extendToNextTowsExponent(binNumber);
+		binNumber = extendToNextTwosExponent(binNumber);
 		if(isNeg){
-			binNumber = internalTowsComplement(binNumber);
+			binNumber = internalTwosComplement(binNumber);
 		}
 		return new BinaryNumber(binNumber);
 	}
@@ -124,11 +124,11 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 			return new BinaryNumber(new byte[]{0});
 
 		if(isNegative(this.binary) && !isNegative(bin.binary)){
-			return new BinaryNumber(internalSubtract(bin.binary, extendToNextTowsExponent(internalTowsComplement(this.binary))));
+			return new BinaryNumber(internalSubtract(bin.binary, extendToNextTwosExponent(internalTwosComplement(this.binary))));
 		}else if(!isNegative(this.binary) && isNegative(bin.binary)){
-			return new BinaryNumber(internalSubtract(this.binary, extendToNextTowsExponent(internalTowsComplement(bin.binary))));
+			return new BinaryNumber(internalSubtract(this.binary, extendToNextTwosExponent(internalTwosComplement(bin.binary))));
 		}else if(isNegative(this.binary) && isNegative(bin.binary)){
-			return new BinaryNumber(internalTowsComplement(internalAdd(internalTowsComplement(this.binary), internalTowsComplement(bin.binary))));
+			return new BinaryNumber(internalTwosComplement(internalAdd(internalTwosComplement(this.binary), internalTwosComplement(bin.binary))));
 		}else{
 			byte[] tmp = internalAdd(this.binary,bin.binary);
 			return new BinaryNumber(tmp);
@@ -142,13 +142,13 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 
 		if(!isNegative(this.binary) && isNegative(bin.binary)){
 			return new BinaryNumber(internalAdd(
-					this.binary, internalTowsComplement(bin.binary)));
+					this.binary, internalTwosComplement(bin.binary)));
 		}else if(isNegative(this.binary) && !isNegative(bin.binary)){
-			return new BinaryNumber(internalTowsComplement(
-					internalAdd(internalTowsComplement(this.binary), bin.binary)));
+			return new BinaryNumber(internalTwosComplement(
+					internalAdd(internalTwosComplement(this.binary), bin.binary)));
 		}else if(isNegative(this.binary) && isNegative(bin.binary)){
 			return new BinaryNumber(internalSubtract(
-					internalTowsComplement(bin.binary), internalTowsComplement(this.binary)));
+					internalTwosComplement(bin.binary), internalTwosComplement(this.binary)));
 		}else{
 			return new BinaryNumber(internalSubtract(this.binary, bin.binary));
 		}
@@ -161,10 +161,10 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 		return new BinaryNumber(internalMultiply(this.binary, bin.binary));
 	}
 
-	public BinaryNumber towsComplement(){
+	public BinaryNumber twosComplement(){
 		if(this.equals(ZERO))
 			return ZERO;
-		return new BinaryNumber(internalTowsComplement(this.binary));
+		return new BinaryNumber(internalTwosComplement(this.binary));
 	}
 
 	public BinaryNumber invert(){
@@ -213,8 +213,8 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 		int binaryLen = binary.length;
 		for(int i = 0; i < binaryLen; i++){
 			if(binary[binaryLen - (i + 1)] == 1){
-				BigInteger towsPow = TWO_DEZ.pow(i);
-				dezimal = dezimal.add(towsPow);
+				BigInteger twosPow = TWO_DEZ.pow(i);
+				dezimal = dezimal.add(twosPow);
 			}
 		}
 		if(sign == 1){
@@ -313,7 +313,7 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 		int longerLen = longer.length;
 		binBinary = fillBinarayNumberWithZeros(binBinary, longerLen + 1);
 		longer = fillBinarayNumberWithZeros(minuend, longerLen + 1);
-		byte[] twosCompl = internalTowsComplement(binBinary);
+		byte[] twosCompl = internalTwosComplement(binBinary);
 		twosCompl = removeLeadingZeros(internalAdd(longer,twosCompl));
 		if(twosCompl.length > longerLen){
 			twosCompl = removeLeadingDigit(twosCompl);
@@ -346,11 +346,11 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 		int multiplicantLen = multiplicant.length;
 		int secureResultLen = multiplicantLen+multiplicatorLen - 1;
 		if(isNegative(multiplicator)){
-			multiplicator = extendToNextTowsExponent(internalTowsComplement(multiplicator));
+			multiplicator = extendToNextTwosExponent(internalTwosComplement(multiplicator));
 			isNeg1 = true;
 		}
 		if(isNegative(multiplicant)){
-			multiplicant = extendToNextTowsExponent(internalTowsComplement(multiplicant));
+			multiplicant = extendToNextTwosExponent(internalTwosComplement(multiplicant));
 			isNeg2 = true;
 		}
 		byte[] result = new byte[secureResultLen];
@@ -367,7 +367,7 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 			result = internalAdd(result, partialStep);
 		}
 		if(!(isNeg1 && isNeg2) && !(!isNeg1 && !isNeg2) ){
-			result = internalTowsComplement(result);
+			result = internalTwosComplement(result);
 		}
 		return result;
 	}
@@ -420,10 +420,10 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 			result = mirror(result);
 			result = removeLeadingDigit(result);
 		}
-		return extendToNextTowsExponent(result);
+		return extendToNextTwosExponent(result);
 	}
 
-	private static byte[] internalTowsComplement(byte[] bin){
+	private static byte[] internalTwosComplement(byte[] bin){
 		byte[] b = invert(bin);
 		b = removeLeadingZeros(internalAdd(b,new byte[]{1}));
 		return b;
@@ -538,7 +538,7 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 		return filledBin;
 	}
 
-	private static byte[] extendToNextTowsExponent(byte[] bin){
+	private static byte[] extendToNextTwosExponent(byte[] bin){
 		int validLen = getNextValidNumberOfBits(bin);
 		return fillBinarayNumberWithZeros(bin, validLen);
 	}
@@ -568,14 +568,14 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 			throw new ArithmeticException("Division by zero");
 		}
 		if(!isNegative(this.binary) && isNegative(bin.binary)){
-			return new BinaryNumber(internalTowsComplement(
-					internalDivide(this.binary, internalTowsComplement(bin.binary))));
+			return new BinaryNumber(internalTwosComplement(
+					internalDivide(this.binary, internalTwosComplement(bin.binary))));
 		}else if(isNegative(this.binary) && !isNegative(bin.binary)){
-			return new BinaryNumber(internalTowsComplement(
-					internalDivide(internalTowsComplement(this.binary), bin.binary)));
+			return new BinaryNumber(internalTwosComplement(
+					internalDivide(internalTwosComplement(this.binary), bin.binary)));
 		}else if(isNegative(this.binary) && isNegative(bin.binary)){
 			return new BinaryNumber(internalDivide(
-					internalTowsComplement(this.binary), internalTowsComplement(bin.binary)));
+					internalTwosComplement(this.binary), internalTwosComplement(bin.binary)));
 		}else{
 			return new BinaryNumber(internalDivide(this.binary, bin.binary));
 		}
@@ -605,7 +605,7 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 			position++;
 		}
 		byte[] resultAsBytes = mapListToArray(result);
-		return extendToNextTowsExponent(resultAsBytes);
+		return extendToNextTwosExponent(resultAsBytes);
 	}
 
 	private static byte[] mapListToArray(List<Byte> values){
@@ -644,7 +644,7 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 		String bin = "";
 		if(isNeg){
 			bin = "-";
-			bin += this.towsComplement().removeLeadingZeros().toString();
+			bin += this.twosComplement().removeLeadingZeros().toString();
 		}else{
 			bin += this.removeLeadingZeros().toString();
 		}
