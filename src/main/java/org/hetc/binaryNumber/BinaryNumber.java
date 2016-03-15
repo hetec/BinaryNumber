@@ -88,6 +88,11 @@ public final class BinaryNumber implements Comparable<BinaryNumber>{
 			throw new NumberFormatException("Invalid charackter for the first digit of the String"
 					+ " - must be 0, 1 or '-'");
 		}
+		for(char digit : bin.substring(1).toCharArray()){
+			if(digit != '0' && digit != '1'){
+				throw new NumberFormatException("Binary number may only consits of ones and zeros");
+			}
+		}
 
 	}
 

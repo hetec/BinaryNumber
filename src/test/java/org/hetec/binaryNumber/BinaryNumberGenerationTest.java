@@ -144,4 +144,9 @@ public class BinaryNumberGenerationTest {
             BinaryNumber.of("ab0100");
 	}
 
+	@Test(expected = NumberFormatException.class)
+	public void testOfNegStringForIllegalNegNumbers(){
+		BinaryNumber.of("-987");
+	}
+
 }
